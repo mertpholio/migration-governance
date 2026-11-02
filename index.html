@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migration Governance in Practice</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one shell with two views — a banded governance network map and swimlane field workflows */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --band:#E5EAF0; --ink:#16233A; --muted:#566275; --line:#C9D1DB; --accent:#B4620F;
+  --law:#2E4C8F; --coord:#1F7A72; --fund:#B4620F; --partner:#7A6A9E; --market:#7A5C3E; --pband:#F3E9DF; --dim:0.12;
+  --intl:#2F4B86; --pub:#5E6878; --prot:#2E6BB0; --care:#1F7A72; --needs:#A35A0E; --comm:#6E5AA0; --evid:#A23E66; --lv:#DCE3EB;
+  --serif:'Source Serif 4', Georgia, serif; --sans:'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1724; --surface:#18233A; --band:#152033; --ink:#E6ECF5; --muted:#9AA8BD; --line:#2C3A52; --accent:#F0A55A;
+  --law:#8EAEF2; --coord:#5CC7BB; --fund:#F0A55A; --partner:#B9A9DF; --market:#D2B48C; --pband:#2A2421; --dim:0.15;
+  --intl:#9DB4EA; --pub:#AEB8C6; --prot:#7FB2EE; --care:#5CC7BB; --needs:#F0A55A; --comm:#B9A9E6; --evid:#EE94B8; --lv:#1D2A42; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1724; --surface:#18233A; --band:#152033; --ink:#E6ECF5; --muted:#9AA8BD; --line:#2C3A52; --accent:#F0A55A;
+  --law:#8EAEF2; --coord:#5CC7BB; --fund:#F0A55A; --partner:#B9A9DF; --market:#D2B48C; --pband:#2A2421; --dim:0.15;
+  --intl:#9DB4EA; --pub:#AEB8C6; --prot:#7FB2EE; --care:#5CC7BB; --needs:#F0A55A; --comm:#B9A9E6; --evid:#EE94B8; --lv:#1D2A42; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+.shell{max-width:1400px;margin:0 auto;padding-block:24px 0;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:14px}
+.shell .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.shell h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.6vw,44px);line-height:1.08;margin:0;text-wrap:balance}
+.shell p{margin:0;color:var(--muted);max-width:72ch}
+.toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 24px;flex-wrap:wrap}
+.version{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;white-space:nowrap;margin-top:6px}
+.vtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:6px;overflow-x:auto}
+.vtab{font:inherit;font-size:15px;font-weight:600;cursor:pointer;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:10px 16px 9px;white-space:nowrap}
+.vtab:hover{color:var(--ink)}
+.vtab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.vtab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.viewtitle{font-family:var(--serif);font-weight:600;font-size:clamp(22px,2.8vw,32px);line-height:1.12;margin:0;text-wrap:balance}
+
+#view-map .wrap{max-width:1400px;margin:0 auto;padding-block:24px 40px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+#view-map header{display:flex;flex-direction:column;gap:6px}
+#view-map .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+#view-map h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.4vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+#view-map .lede{color:var(--muted);max-width:72ch;margin:0}
+#view-map .controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+#view-map .group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#view-map .group-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+#view-map button{font:inherit;font-size:14px;cursor:pointer;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;display:inline-flex;gap:7px;align-items:center}
+#view-map button:hover{border-color:var(--muted)}
+#view-map button:focus-visible,#view-map .node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#view-map button[aria-pressed="false"]{opacity:.45}
+#view-map button.case[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);opacity:1}
+#view-map button.case[aria-pressed="false"]{opacity:1}
+#view-map .sw{width:18px;height:0;border-top:3px solid currentColor;display:inline-block}
+#view-map .sw.dash{border-top-style:dashed}
+#view-map .sw.dot{border-top-style:dotted}
+#view-map .main{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:stretch}
+#view-map .panelwrap{position:relative;min-height:0}
+#view-map .mapbox{position:relative;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+#view-map svg{display:block;width:100%;min-width:780px;height:auto}
+#view-map .panel{position:absolute;inset:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain}
+#view-map .panel>*{flex:none}
+#view-map .panel h2{font-family:var(--serif);font-size:24px;line-height:1.15;margin:0;font-weight:600}
+#view-map .panel .meta{font-size:13px;color:var(--muted);margin:0}
+#view-map .panel p{margin:0}
+#view-map .panel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#view-map .panel li button{border-radius:8px;width:100%;justify-content:flex-start;text-align:left;padding:7px 10px;font-size:14px}
+#view-map .panel li .rel{color:var(--muted)}
+#view-map .panel ul.notes{list-style:disc;padding-left:18px;gap:8px;font-size:14px;line-height:1.45}
+#view-map .panel ul.notes li::marker{color:var(--accent)}
+#view-map .box{background:var(--band);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+#view-map .box.deb{border-left:4px solid var(--accent)}
+#view-map .kicker{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#view-map .chips{display:flex;flex-wrap:wrap;gap:6px}
+#view-map .chip{border-radius:999px;padding:4px 11px;font-size:13px}
+#view-map .legend{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;color:var(--muted);align-items:center}
+#view-map .legend svg{min-width:0;width:auto;display:inline;vertical-align:-4px}
+#view-map .legend b{color:var(--ink);font-weight:600}
+@media (max-width:900px){#view-map .main{grid-template-columns:1fr}
+#view-map .panelwrap{position:static}
+#view-map .panel{position:static}}
+#view-map .compare-head{display:flex;flex-direction:column;gap:6px}
+#view-map .compare-head h2,#view-map .sec-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,2.6vw,30px);line-height:1.15;margin:0;text-wrap:balance}
+#view-map .compare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:980px){#view-map .compare{grid-template-columns:1fr}}
+#view-map .ccard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+#view-map .ccard h3{margin:0;font-size:17px;line-height:1.3}
+#view-map .ccard p{margin:0;font-size:14px;color:var(--muted)}
+#view-map .ccard svg.mini{min-width:0;width:100%;height:auto;border-radius:8px}
+#view-map .ccard .open{align-self:flex-start}
+#view-map .mini .mb{fill:var(--band)}
+#view-map .mini .mp{fill:var(--pband)}
+#view-map .mini .moff{fill:var(--line)}
+#view-map .mini .mon{fill:var(--ink)}
+#view-map .mini .mpeople{fill:var(--accent)}
+#view-map .mini .mlab{fill:var(--muted);font:600 26px var(--sans);letter-spacing:1px;text-transform:uppercase}
+#view-map .mini .medge{stroke-width:5;fill:none}
+#view-map .mini .medge.law{stroke:var(--law)}
+#view-map .mini .medge.coord{stroke:var(--coord)}
+#view-map .mini .medge.fund{stroke:var(--fund)}
+#view-map .mini .medge.partner{stroke:var(--partner)}
+#view-map .mini .medge.market{stroke:var(--market)}
+#view-map .levels{display:grid;grid-template-columns:auto 1fr auto;gap:3px 10px;align-items:center;font-size:13px}
+#view-map .levels .lt{font-weight:600}
+#view-map .levels .bar{height:8px;border-radius:4px;background:var(--band);overflow:hidden}
+#view-map .levels .bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+#view-map .levels .ct{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+#view-map .band rect{fill:var(--band)}
+#view-map .band.pband rect{fill:var(--pband)}
+#view-map .band text{fill:var(--muted);font:600 11px var(--sans);letter-spacing:.14em;text-transform:uppercase}
+#view-map .edge{fill:none;stroke-width:2.2;transition:opacity .2s}
+#view-map .edge.law{stroke:var(--law)}
+#view-map .edge.coord{stroke:var(--coord)}
+#view-map .edge.fund{stroke:var(--fund)}
+#view-map .edge.partner{stroke:var(--partner);stroke-dasharray:6 5}
+#view-map .edge.market{stroke:var(--market);stroke-dasharray:1 5;stroke-linecap:round}
+#view-map .arrowhead.law{fill:var(--law)}
+#view-map .arrowhead.fund{fill:var(--fund)}
+#view-map .node{cursor:pointer;transition:opacity .2s}
+#view-map .node .shape{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+#view-map .node.rule .shape{fill:var(--band)}
+#view-map .node.rule.soft .shape{stroke-dasharray:5 4}
+#view-map .node.state .shape{fill:var(--band)}
+#view-map .node.market .shape{stroke-dasharray:1 4;stroke-linecap:round;stroke-width:2.6}
+#view-map .node.people .shape{fill:var(--accent);stroke:var(--accent)}
+#view-map .node text{fill:var(--ink);font:500 12.5px var(--sans);text-anchor:middle;paint-order:stroke;stroke:var(--band);stroke-width:4px;stroke-linejoin:round}
+#view-map .node.inpeople text{stroke:var(--pband)}
+#view-map .node text .trl{fill:var(--muted);font-size:11px;font-weight:600}
+#view-map .node.sel .shape{stroke:var(--accent);stroke-width:3.5}
+#view-map .node .doodle{color:var(--ink);pointer-events:none}
+#view-map .node.umbrella .shape{fill:var(--surface);stroke:var(--coord);stroke-width:2.6}
+#view-map .node.umbrella .ring{fill:none;stroke:var(--coord);stroke-width:1.6;stroke-dasharray:4 4}
+#view-map .node.umbrella .doodle{color:var(--coord)}
+#view-map .node.umbrella text{font-weight:600}
+#view-map .node.people .doodle{color:var(--surface)}
+#view-map .legend .lg{display:inline-flex;gap:7px;align-items:center}
+#view-map .elabel{font:500 11.5px var(--sans);fill:var(--ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+#view-map .lbg{fill:var(--surface);stroke-width:1.5}
+#view-map .lab{cursor:help}
+#view-map .lbg.law{stroke:var(--law)}
+#view-map .lbg.coord{stroke:var(--coord)}
+#view-map .lbg.fund{stroke:var(--fund)}
+#view-map .lbg.partner{stroke:var(--partner)}
+#view-map .lbg.market{stroke:var(--market)}
+#view-map .off{display:none}
+#view-map .zoomctl{position:absolute;top:10px;right:12px;display:flex;gap:6px;align-items:center;z-index:2}
+#view-map .zoomctl button{padding:4px 11px;font-size:15px;line-height:1.2;box-shadow:0 1px 3px rgba(22,35,58,.12)}
+#view-map .zoomctl .zhint{font-size:12px;color:var(--muted);background:var(--surface);border-radius:6px;padding:3px 8px;order:-1}
+#view-map #map.zoomed{cursor:grab}
+#view-map #map.panning{cursor:grabbing}
+#view-map details.links{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#view-map details.links summary{cursor:pointer;font-weight:600}
+#view-map .ltab-wrap{overflow-x:auto;margin-top:10px}
+#view-map .ltab{width:100%;min-width:720px;border-collapse:collapse;font-size:13.5px}
+#view-map .ltab th{text-align:left;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+#view-map .ltab td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+#view-map .ltab td:last-child{font-variant-numeric:tabular-nums}
+#view-map .practice{display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--line);padding-top:28px;margin-top:10px}
+#view-map .sec-head{display:flex;flex-direction:column;gap:6px}
+#view-map details.practice{display:block}
+#view-map details.practice[open]>summary{margin-bottom:16px}
+#view-map details.practice>summary{list-style:none;cursor:pointer}
+#view-map details.practice>summary::-webkit-details-marker{display:none}
+#view-map details.practice>summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+#view-map .sumrow{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#view-map .chev{flex:none;width:12px;height:12px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg);margin-right:6px;transition:transform .2s}
+#view-map details.practice[open] .chev{transform:rotate(-135deg)}
+#view-map details.practice>summary:hover .chev{border-color:var(--ink)}
+#view-map .pbody{display:flex;flex-direction:column;gap:16px;padding-top:6px}
+#view-map .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+#view-map .col{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+#view-map .col h3,#view-map .role h3{margin:0 0 10px;font-size:17px;font-weight:600}
+#view-map .ticks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+#view-map .ticks li{padding-left:18px;position:relative}
+#view-map .ticks li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;border-radius:50%;background:var(--coord)}
+#view-map .ticks.warn li::before{background:var(--fund)}
+#view-map .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+#view-map .role{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+#view-map .role h3{margin:0}
+#view-map .role p{margin:0}
+#view-map .where{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--coord)}
+#view-map .skills{font-size:13px;color:var(--muted)}
+#view-map .stepnav{display:flex;gap:8px;align-items:center}
+#view-map .stepnav .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-right:auto}
+@media (prefers-reduced-motion:reduce){#view-map .edge,#view-map .node{transition:none}}
+#view-flow .wrap{max-width:1400px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:20px}
+#view-flow header{display:flex;flex-direction:column;gap:6px}
+#view-flow .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+#view-flow h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.4vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+#view-flow h2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,2.6vw,30px);line-height:1.15;margin:0;text-wrap:balance}
+#view-flow .lede{color:var(--muted);max-width:72ch;margin:0}
+#view-flow button{font:inherit;cursor:pointer;color:var(--ink)}
+#view-flow button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#view-flow .tabgroups{display:flex;flex-direction:column;gap:8px}
+#view-flow .tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#view-flow .tabs .glabel{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);min-width:150px}
+#view-flow .tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px}
+#view-flow .tab:hover{border-color:var(--muted)}
+#view-flow .tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#view-flow .casehead{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+#view-flow .casehead .who{font-family:var(--serif);font-size:20px;line-height:1.35;margin:6px 0 0}
+#view-flow .casehead p{margin:0}
+#view-flow .casehead .side{display:flex;flex-direction:column;gap:14px}
+@media (max-width:820px){#view-flow .casehead{grid-template-columns:1fr;gap:10px}}
+#view-flow .levels{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;font-size:13px;max-width:420px}
+#view-flow .levels .lt{font-weight:600}
+#view-flow .levels .bar{height:8px;border-radius:4px;background:var(--band);overflow:hidden}
+#view-flow .levels .bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+#view-flow .levels .ct{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+#view-flow .levels-title{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#view-flow .flow-scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+#view-flow .flow{position:relative;display:grid;padding:12px 16px 16px 0}
+#view-flow .flow svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+#view-flow .colhead{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 10px 10px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
+#view-flow .colhead .n{font-variant-numeric:tabular-nums;color:var(--accent)}
+#view-flow .bandrow{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:9px 16px;background:var(--lv);border-bottom:1px solid var(--line)}
+#view-flow .bandrow b{font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+#view-flow .bandrow span{font-size:13px;color:var(--muted)}
+#view-flow .bandrow.empty{background:transparent}
+#view-flow .bandrow.empty b{color:var(--muted)}
+#view-flow .lanehead{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:12px 14px 12px 16px;border-bottom:1px solid var(--line);border-left:5px solid var(--c);background:var(--band)}
+#view-flow .lanehead b{font-size:14px;line-height:1.25}
+#view-flow .lanehead span{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+#view-flow .cell{display:flex;flex-direction:column;gap:10px;justify-content:center;padding:12px 10px;border-bottom:1px solid var(--line);min-width:0}
+#view-flow .lane-hl{background:color-mix(in srgb, var(--accent) 9%, transparent)}
+#view-flow .step{position:relative;z-index:1;text-align:left;background:var(--surface);border:1.5px solid var(--c);border-radius:10px;padding:9px 11px 10px 11px;display:flex;flex-direction:column;gap:4px;transition:opacity .2s, box-shadow .2s}
+#view-flow .step:hover{box-shadow:0 2px 10px rgba(22,35,58,.12)}
+#view-flow .step .top{display:flex;gap:8px;align-items:flex-start}
+#view-flow .step .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:var(--surface);font-size:12px;font-weight:600;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+#view-flow .step .t{font-weight:600;font-size:14px;line-height:1.3}
+#view-flow .step .w{font-size:12.5px;color:var(--muted);padding-left:30px;line-height:1.35}
+#view-flow .step.sel{box-shadow:0 0 0 3px var(--c)}
+#view-flow .dim .step:not(.sel):not(.nb){opacity:.4}
+#view-flow .arrow{fill:none;stroke:var(--line);stroke-width:2}
+#view-flow .arrow.on{stroke:var(--accent);stroke-width:2.5}
+#view-flow .detail{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c, var(--line));border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+#view-flow .detail .kicker{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#view-flow .detail h3{font-family:var(--serif);font-size:22px;margin:0;line-height:1.2;font-weight:600}
+#view-flow .detail p{margin:0;max-width:75ch}
+#view-flow .chips{display:flex;flex-wrap:wrap;gap:6px}
+#view-flow .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+#view-flow .chip .dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+#view-flow button.chip:hover{border-color:var(--muted)}
+#view-flow .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted);align-items:center}
+#view-flow .legend .dot{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block;margin-right:6px;vertical-align:-1px}
+#view-flow .dir{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:28px;margin-top:6px}
+#view-flow .fam{display:flex;flex-direction:column;gap:10px}
+#view-flow .fam h3{margin:6px 0 0;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+#view-flow .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+#view-flow .card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+#view-flow .card h4{margin:0;font-size:16px;line-height:1.25}
+#view-flow .card p{margin:0;font-size:14px;color:var(--muted)}
+#view-flow .card .lab{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#view-flow .card .workers{display:flex;flex-wrap:wrap;gap:5px}
+#view-flow .card .workers span{font-size:12.5px;background:var(--band);border-radius:6px;padding:2px 8px}
+#view-flow .card .lvls{font-size:13.5px}
+#view-flow .ex{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.4}
+#view-flow .ex li{padding-left:12px;border-left:2px solid var(--c, var(--line))}
+#view-flow .ex span{color:var(--muted)}
+#view-flow .detail .ex{max-width:75ch}
+#view-flow .tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+#view-flow .prog{width:100%;min-width:860px;border-collapse:collapse;font-size:14px}
+#view-flow .prog th{text-align:left;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 14px;border-bottom:1px solid var(--line);background:var(--band)}
+#view-flow .prog td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+#view-flow .prog tr:last-child td{border-bottom:none}
+#view-flow .prog td span{color:var(--muted);font-size:13px}
+#view-flow .prog td:last-child{white-space:nowrap;font-size:13px;color:var(--accent);font-weight:600}
+#view-flow details.fold{display:block}
+#view-flow details.fold>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+#view-flow details.fold>summary::-webkit-details-marker{display:none}
+#view-flow details.fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+#view-flow details.fold[open]>summary{margin-bottom:14px}
+#view-flow .sumrow{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#view-flow .chev{flex:none;width:12px;height:12px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg);margin-right:6px;transition:transform .2s}
+#view-flow details.fold[open] .chev{transform:rotate(-135deg)}
+#view-flow details.fold>summary:hover .chev{border-color:var(--ink)}
+#view-flow .pbody{display:flex;flex-direction:column;gap:14px}
+#view-flow .sumbox{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+#view-flow .sumlab{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+#view-flow .sumbox p{margin:0;font-size:15px;line-height:1.5;color:var(--ink)}
+#view-flow .note{font-size:13px;color:var(--muted);margin:0;max-width:90ch}
+@media (prefers-reduced-motion:reduce){#view-flow .step{transition:none}}
+#view-map .viewtitle, #view-flow .viewtitle{font-size:clamp(22px,2.8vw,32px)}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="toprow"><h1>Migration governance in practice</h1><span class="version">Current version: October 2026</span></div>
+  <p>Two views of the same system: who sets the rules and how the actors connect, and how organizations work together on real cases in Türkiye.</p>
+  <div class="vtabs" role="tablist" aria-label="Views">
+    <button class="vtab" role="tab" id="vt-map" aria-controls="view-map" aria-selected="true">Governance map</button>
+    <button class="vtab" role="tab" id="vt-flow" aria-controls="view-flow" aria-selected="false">Field workflows</button>
+  </div>
+</div>
+
+<div id="view-map" role="tabpanel" aria-labelledby="vt-map">
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Governance map</span>
+    <h2 class="viewtitle">Who governs migration? A map of the actors</h2>
+    <p class="lede">Organizations, laws and frameworks sit at the level where they work: global, regional, national or local. People appear at the bottom, grouped by the legal status that decides which links reach them. Select any actor to see its links and the main debates around it. For treaties, Türkiye’s position is shown as an example.</p>
+  </header>
+
+  <section class="compare-head" aria-labelledby="cmp-h">
+    <span class="eyebrow">Three cases</span>
+    <h2 id="cmp-h">Three kinds of migration, three patterns of governance</h2>
+    <p class="lede">The same map lights up very differently depending on why people move. Protection draws in every level, labour migration is shaped by standards and markets, and student migration is handled almost entirely by national institutions.</p>
+  </section>
+  <div class="compare" id="compare"></div>
+
+  <div class="controls" id="mapmain">
+    <div class="group" role="group" aria-label="Relation types">
+      <span class="group-label">Links</span>
+      <button class="ftype" data-type="law" aria-pressed="true" style="color:var(--law)"><span class="sw"></span><span style="color:var(--ink)">Rules &amp; authority</span></button>
+      <button class="ftype" data-type="coord" aria-pressed="true" style="color:var(--coord)"><span class="sw"></span><span style="color:var(--ink)">Coordination</span></button>
+      <button class="ftype" data-type="fund" aria-pressed="true" style="color:var(--fund)"><span class="sw"></span><span style="color:var(--ink)">Funding</span></button>
+      <button class="ftype" data-type="partner" aria-pressed="true" style="color:var(--partner)"><span class="sw dash"></span><span style="color:var(--ink)">Field partnership</span></button>
+      <button class="ftype" data-type="market" aria-pressed="true" style="color:var(--market)"><span class="sw dot"></span><span style="color:var(--ink)">Market &amp; informal</span></button>
+    </div>
+    <div class="group" role="group" aria-label="Cases">
+      <span class="group-label">Cases</span>
+      <button class="case" data-case="c1" aria-pressed="false">Displacement &amp; protection</button>
+      <button class="case" data-case="c2" aria-pressed="false">Labour migration</button>
+      <button class="case" data-case="c3" aria-pressed="false">Student migration</button>
+      <button id="reset">Show all</button>
+    </div>
+    <div class="group" role="group" aria-label="Project cycle">
+      <span class="group-label">In practice</span>
+      <button class="case" id="cycle" aria-pressed="false">Follow a project, step by step</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="mapbox">
+      <div class="zoomctl" role="group" aria-label="Zoom"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zfit">Reset</button><span class="zhint">Ctrl + scroll or pinch to zoom · drag to move</span></div>
+      <svg id="map" viewBox="0 0 1180 980" role="img" aria-label="Network map of migration governance actors, frameworks and people by legal status">
+        <defs>
+          <marker id="m-law" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path class="arrowhead law" d="M0 0L10 5L0 10z"/></marker>
+          <marker id="m-fund" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path class="arrowhead fund" d="M0 0L10 5L0 10z"/></marker>
+          <symbol id="dd-umbrella" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.2 L12 2.8"/><path d="M2.8 12 Q3.2 4.6 12 4.2 Q20.8 4.6 21.2 12 Q19 10.4 16.6 12 Q14.3 10.4 12 12 Q9.7 10.4 7.4 12 Q5 10.4 2.8 12 Z"/><path d="M12 12 L12 18.6 Q12 21.2 9.9 20.8 Q8.5 20.4 8.7 18.8"/></g></symbol>
+          <symbol id="dd-building" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 9.2 Q7.6 6.4 12 4.1 Q16.3 6.6 20.8 9.1"/><path d="M3.6 9.6 Q12 9.1 20.4 9.7"/><path d="M6.6 11.6 Q6.4 14.4 6.7 17.3 M12 11.5 Q12.2 14.3 11.9 17.3 M17.4 11.6 Q17.6 14.5 17.3 17.3"/><path d="M3.4 19.6 Q12 19.1 20.6 19.7"/></g></symbol>
+          <symbol id="dd-flag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 21 Q5.9 12.5 6.2 3.4"/><path d="M6.4 4.6 Q9.4 3.2 12.2 4.9 Q15.2 6.5 18.6 4.8 L18.4 12.4 Q15.1 14 12.1 12.3 Q9.3 10.8 6.4 12.2"/></g></symbol>
+          <symbol id="dd-stamp" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.4 9 Q8.2 6.4 9.6 3.8 Q12 2.7 14.4 3.8 Q15.8 6.4 13.6 9 L13.7 11.1 M10.4 9 L10.3 11.1"/><path d="M5 11.3 Q12 10.7 19 11.3 L19.2 14.7 Q12 15.3 4.8 14.7 Z"/><path d="M4.4 18.4 Q12 17.6 19.6 18.6"/><path d="M7.4 20.8 L9.2 20.7 M11.2 20.7 L13 20.8 M15 20.7 L16.8 20.8"/></g></symbol>
+          <symbol id="dd-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 3.2 L14.6 3.1 L18.6 7.2 L18.4 20.8 L6.2 20.9 Z"/><path d="M14.6 3.1 L14.5 7.3 L18.6 7.2"/><path d="M8.8 10.4 Q12 10.1 15.6 10.5 M8.8 13.3 Q11 13 12.8 13.4"/><circle cx="14.4" cy="16.8" r="2.1"/><path d="M13.4 18.7 L12.9 21.4 M15.4 18.7 L15.9 21.4"/></g></symbol>
+          <symbol id="dd-bubble" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.6 Q4.2 4.1 6.8 4.1 L17.4 4.2 Q20 4.3 19.9 6.8 L19.8 13.2 Q19.7 15.6 17.2 15.6 L11 15.7 L7 19.6 L7.4 15.6 L6.6 15.6 Q4.1 15.5 4.1 13 Z"/></g><g fill="currentColor"><circle cx="8.4" cy="9.9" r="1.1"/><circle cx="12" cy="9.9" r="1.1"/><circle cx="15.6" cy="9.9" r="1.1"/></g></symbol>
+          <symbol id="dd-briefcase" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 8.2 Q12 7.6 20.4 8.3 L20.2 19.4 Q12 19.9 3.8 19.3 Z"/><path d="M9 8 L9.1 5.6 Q12 4.8 14.9 5.6 L15 8"/><path d="M3.8 12.8 Q12 13.6 20.2 12.9"/><path d="M11 12.6 L13 12.6 L13 14.8 L11 14.8 Z"/></g></symbol>
+          <symbol id="dd-network" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2.3"/><circle cx="18" cy="6.6" r="2.3"/><circle cx="12" cy="17.6" r="2.3"/><path d="M8.3 7.4 Q12 9.4 15.7 7.2 M7.2 9 Q9.2 13 10.6 15.6 M16.9 8.8 Q15 12.9 13.4 15.6"/></g></symbol>
+          <symbol id="dd-person" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.6" r="3.2"/><path d="M5.6 20 Q6 13.2 12 12.8 Q18 13.2 18.4 20"/></g></symbol>
+          <symbol id="dd-scales" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 Q11.8 12 12.1 20 M7.6 20.4 Q12 19.8 16.4 20.4 M4.4 7.2 Q12 5.6 19.6 7.2"/><path d="M5.4 7.4 L3.4 12.4 M5.4 7.4 L7.6 12.4 M3 12.4 Q5.4 15 8 12.4"/><path d="M18.6 7.4 L16.4 12.4 M18.6 7.4 L20.8 12.4 M16 12.4 Q18.6 15 21 12.4"/></g></symbol>
+          <symbol id="dd-clipboard" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5 L18 5.1 L17.9 21 L6.1 20.9 Z"/><path d="M9.2 3.4 L14.8 3.4 L14.6 6.6 L9.4 6.6 Z"/><path d="M8.4 11 L9.6 12.2 L11.6 9.8 M13 11 L16 11 M8.4 16 L9.6 17.2 L11.6 14.8 M13 16 L16 16"/></g></symbol>
+          <symbol id="dd-coins" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.6" rx="6.4" ry="2.4"/><path d="M5.6 6.6 L5.6 10.6 Q5.8 13 12 13 Q18.2 13 18.4 10.6 L18.4 6.6"/><path d="M5.6 10.6 L5.6 14.6 Q5.8 17 12 17 Q18.2 17 18.4 14.6 L18.4 10.6"/><path d="M5.6 14.6 L5.6 18.4 Q5.8 20.8 12 20.8 Q18.2 20.8 18.4 18.4 L18.4 14.6"/></g></symbol>
+          <symbol id="dd-heart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19.6 Q4 14 4.6 8.8 Q5.4 5 9 5.4 Q11 5.7 12 7.8 Q13 5.7 15 5.4 Q18.6 5 19.4 8.8 Q20 14 12 19.6 Z"/><path d="M8.2 10.4 Q9 8.6 10.6 8.8"/></g></symbol>
+          <symbol id="dd-aid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2 Q12 7.6 20 8.2 L19.8 19.6 Q12 20.1 4.2 19.6 Z"/><path d="M9.4 8 L9.6 5.6 L14.4 5.6 L14.6 8"/><path d="M12 10.8 L12 17 M8.9 13.9 L15.1 13.9"/></g></symbol>
+          <symbol id="dd-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.6 Q8 4.2 3.6 5.4 L3.8 18.2 Q8 17 12 19.2 Q16 17 20.2 18.2 L20.4 5.4 Q16 4.2 12 6.6 Z"/><path d="M12 6.6 L12 19.2"/></g></symbol>
+          <symbol id="dd-tent" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 19.8 Q7.4 12 12 4.2 Q16.6 12 21.2 19.8 Q12 19.2 2.8 19.8 Z"/><path d="M12 9.6 L9.2 19.5 M12 9.6 L14.8 19.5"/></g></symbol>
+          <symbol id="dd-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4 Q16 5.6 19.4 5.4 Q19.8 15 12 20.8 Q4.2 15 4.6 5.4 Q8 5.6 12 3.4 Z"/><path d="M8.6 12.2 L11 14.6 L15.6 9.6"/></g></symbol>
+          <symbol id="dd-hardhat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15.4 Q4.4 7.6 12 7.2 Q19.6 7.6 20 15.4"/><path d="M2.6 15.6 Q12 14.8 21.4 15.6 L21.2 17.6 Q12 18.4 2.8 17.6 Z"/><path d="M12 7.2 L12 11.6 M9 8 L9.4 11.8 M15 8 L14.6 11.8"/></g></symbol>
+          <symbol id="dd-cap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 9.4 L12 5 L21.4 9.4 L12 13.8 Z"/><path d="M6.4 11.4 L6.4 15.4 Q12 18.6 17.6 15.4 L17.6 11.4"/><path d="M21.4 9.4 L21.4 14.4"/></g><circle cx="21.4" cy="15.4" r="1" fill="currentColor"/></symbol>
+          <symbol id="dd-noid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 6.4 Q12 6 20.6 6.4 L20.4 17.8 Q12 18.2 3.6 17.8 Z"/><circle cx="8" cy="10.6" r="1.8"/><path d="M5.4 15.4 Q8 13 10.6 15.4 M13 10.2 L18 10.2 M13 13.2 L16.6 13.2"/><path d="M3 20.6 L21 3.4"/></g></symbol>
+        </defs>
+        <g id="bands"></g><g id="edges"></g><g id="nodes"></g><g id="elabels"></g>
+      </svg>
+    </div>
+    <div class="panelwrap"><aside class="panel" id="panel" aria-live="polite"></aside></div>
+  </div>
+
+  <div class="legend">
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.4" fill="none" stroke="currentColor" stroke-width="1.6"/><use href="#dd-building" x="7" y="7" width="14" height="14"/></svg>Organization</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.6" fill="none" style="stroke:var(--coord)" stroke-width="1.4" stroke-dasharray="3 3"/><circle cx="14" cy="14" r="9" fill="none" style="stroke:var(--coord)" stroke-width="1.6"/><use href="#dd-umbrella" x="8.5" y="8.5" width="11" height="11" style="color:var(--coord)"/></svg>Umbrella network</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 1.4 L26.6 14 L14 26.6 L1.4 14Z" fill="none" stroke="currentColor" stroke-width="1.6"/><use href="#dd-flag" x="7" y="7" width="14" height="14"/></svg>State</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 1.4 L26.6 14 L14 26.6 L1.4 14Z" fill="none" stroke="currentColor" stroke-width="1.6"/><use href="#dd-stamp" x="7" y="7" width="14" height="14"/></svg>Public authority</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1.8" y="1.8" width="24.4" height="24.4" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><use href="#dd-doc" x="7" y="7" width="14" height="14"/></svg>Binding treaty or law</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1.8" y="1.8" width="24.4" height="24.4" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3"/><use href="#dd-bubble" x="7" y="7" width="14" height="14"/></svg>Non-binding framework</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="1 3.4" stroke-linecap="round"/><use href="#dd-briefcase" x="7" y="7" width="14" height="14"/></svg>Market actor</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="1 3.4" stroke-linecap="round"/><use href="#dd-network" x="7" y="7" width="14" height="14"/></svg>Informal network</span>
+    <span class="lg"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.8" style="fill:var(--accent)"/><use href="#dd-person" x="7" y="7" width="14" height="14" style="color:var(--surface)"/></svg>People, by legal status</span>
+    <span><b>Arrow</b> = direction of authority or money · <b>TR</b> = Türkiye’s position, shown as an example · <b>label on a line</b> = what one actor does for or to the other; hover it to read the full link</span>
+  </div>
+
+
+  <details class="practice">
+    <summary class="sec-head">
+      <span class="eyebrow">Beyond the map</span>
+      <span class="sumrow"><h2 id="why-h">Why do NGOs exist in this system?</h2><span class="chev" aria-hidden="true"></span></span>
+    </summary>
+    <div class="pbody">
+      <p class="lede">States make the decisions and UN agencies set standards, but neither can sit with a family every week. NGOs fill that space, mostly with money that flows down from donors.</p>
+    <div class="cols">
+      <div class="col">
+        <h3>What NGOs bring</h3>
+        <ul class="ticks">
+          <li><b>Reach and trust.</b> Staff speak the language and work in the neighbourhood; people come to them before they go to an office.</li>
+          <li><b>Specialist skills.</b> Legal aid, case management, psychosocial support, interpretation.</li>
+          <li><b>Speed.</b> A project can start in weeks; a law or a new public service takes years.</li>
+          <li><b>Independent eyes.</b> Monitoring, reports and strategic litigation that hold states to their commitments.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>The tensions</h3>
+        <ul class="ticks warn">
+          <li><b>Donor dependency.</b> Priorities follow the funding call, not always the community’s need.</li>
+          <li><b>Short projects.</b> Often one to three years; when the grant ends, the service can stop.</li>
+          <li><b>Reporting load.</b> Indicators, beneficiary counts and audits take a large share of staff time.</li>
+          <li><b>Two roles at once.</b> Partner of the state and critic of the state, sometimes in the same month.</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+  </details>
+
+  <details class="practice">
+    <summary class="sec-head">
+      <span class="eyebrow">Working in the field</span>
+      <span class="sumrow"><h2 id="jobs-h">Who does what: jobs in migration governance</h2><span class="chev" aria-hidden="true"></span></span>
+    </summary>
+    <div class="pbody">
+      <p class="lede">The same roles appear in UN agencies, international NGOs and local associations. Titles change; the work is recognisable.</p>
+    <div class="roles">
+      <article class="role"><span class="where">NGO · UN</span><h3>Case worker / social worker</h3><p>Meets families, assesses needs, refers them to health, legal or education services and follows up.</p><p class="skills">Languages, interviewing, referral pathways</p></article>
+      <article class="role"><span class="where">UN · NGO · bar associations</span><h3>Protection officer / legal aid</h3><p>Explains status and rights, prepares applications, follows detention and deportation cases.</p><p class="skills">Refugee law, national migration law, casework</p></article>
+      <article class="role"><span class="where">NGO · UN · donors</span><h3>Monitoring &amp; evaluation officer</h3><p>Builds indicators, runs surveys, checks whether the project reached its targets and writes the evidence base.</p><p class="skills">Survey design, statistics, data tools</p></article>
+      <article class="role"><span class="where">NGO · INGO</span><h3>Project coordinator</h3><p>Turns a grant into a work plan, manages staff and budget, and reports to the donor.</p><p class="skills">Planning, budgeting, donor rules</p></article>
+      <article class="role"><span class="where">NGO · INGO</span><h3>Grants &amp; proposal writer</h3><p>Reads funding calls, writes proposals with a logical framework, and keeps the organization funded.</p><p class="skills">Writing, logframes, budgets</p></article>
+      <article class="role"><span class="where">NGO · think tanks · academia</span><h3>Researcher / advocacy officer</h3><p>Documents what happens in the field and turns it into reports, policy briefs and media work.</p><p class="skills">Research methods, writing, media</p></article>
+      <article class="role"><span class="where">Public sector</span><h3>Migration expert (state)</h3><p>Registers applicants, interviews for status decisions, runs integration programmes.</p><p class="skills">Public exam, law, languages</p></article>
+      <article class="role"><span class="where">UN · INGO</span><h3>Programme / field officer</h3><p>Oversees implementing partners, visits sites, and connects field reality to headquarters.</p><p class="skills">English, field experience, coordination</p></article>
+    </div>
+    <p class="lede"><b>Question to consider:</b> Which of these jobs could you apply for after graduating, and what would you need to learn first?</p>
+    </div>
+  </details>
+</div>
+
+</div>
+<div id="view-flow" role="tabpanel" aria-labelledby="vt-flow" hidden>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Field workflows</span>
+    <h2 class="viewtitle">Who works on a migration case? Field workflow maps</h2>
+    <p class="lede">Each map follows one situation from start to finish. Rows are grouped by level, from global bodies at the top to local organizations at the bottom; columns are the stages of the work. Individual cases are handled mostly at local level, while coordination, monitoring and advocacy climb to national, regional and global levels. Select a step to see who does it and what happens next.</p>
+  </header>
+
+  <div class="tabgroups" id="tabs"></div>
+
+  <div class="casehead">
+    <div><h2 id="caseTitle"></h2><p class="who" id="caseWho"></p></div>
+    <div class="side"><div class="sumbox"><span class="sumlab">Case-based common knowledge</span><p id="caseSummary"></p></div></div>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="flow-scroll"><div class="flow" id="flow"></div></div>
+
+  <div class="detail" id="detail" aria-live="polite"></div>
+
+  <details class="dir fold">
+    <summary>
+      <span class="eyebrow">Programmes in Türkiye</span>
+      <span class="sumrow"><h2 id="prog-h">Large programmes and how they move through the levels</h2><span class="chev" aria-hidden="true"></span></span>
+    </summary>
+    <div class="pbody">
+    <p class="lede">Most services for refugees in Türkiye are delivered locally but funded and planned at higher levels. These programmes show the chain from donor to field.</p>
+    <div class="tablewrap"><table class="prog">
+      <thead><tr><th>Programme</th><th>What it does</th><th>Funding</th><th>Implemented by</th><th>Levels</th></tr></thead>
+      <tbody>
+        <tr><td><b>FRIT</b><br><span>Facility for Refugees in Türkiye</span></td><td>The EU’s umbrella fund for refugees in Türkiye, created after the 2016 EU–Türkiye Statement; it finances many of the programmes below.</td><td>European Union</td><td>Turkish ministries, UN agencies and NGOs</td><td>Regional → National</td></tr>
+        <tr><td><b>ESSN / SUY</b><br><span>Emergency Social Safety Net (Kızılaykart)</span></td><td>Monthly cash assistance for vulnerable refugee families, paid on a debit card.</td><td>European Union</td><td>Türk Kızılay with the Ministry of Family and Social Services</td><td>Regional → National → Local</td></tr>
+        <tr><td><b>ŞEY / CCTE</b><br><span>Conditional Cash Transfer for Education</span></td><td>Cash paid to families every two months if their children attend school regularly.</td><td>European Union</td><td>Türk Kızılay and public institutions, with UNICEF</td><td>Regional → National → Local</td></tr>
+        <tr><td><b>PIKTES</b><br><span>Integration of refugee children into the education system</span></td><td>Turkish language classes, catch-up education, school transport and teacher support.</td><td>European Union</td><td>Ministry of National Education</td><td>Regional → National → Local</td></tr>
+        <tr><td><b>SIHHAT</b><br><span>Health services for refugees</span></td><td>Migrant health centres, staff and equipment within the public health system.</td><td>European Union</td><td>Ministry of Health</td><td>Regional → National → Local</td></tr>
+        <tr><td><b>3RP</b><br><span>Regional Refugee and Resilience Plan</span></td><td>Joint plan and funding appeal for refugees and host communities in Türkiye and other countries neighbouring Syria.</td><td>Many donor states</td><td>UNHCR and UNDP with UN agencies and NGO partners</td><td>Global → Regional → National</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </details>
+
+  <details class="dir fold">
+    <summary>
+      <span class="eyebrow">Directory</span>
+      <span class="sumrow"><h2 id="dir-h">Types of organizations, field workers and examples in Türkiye</h2><span class="chev" aria-hidden="true"></span></span>
+    </summary>
+    <div class="pbody">
+    <p class="lede">Each card lists typical roles, the levels where this type of organization works in the cases above, examples of organizations active in Türkiye, and the cases in which it appears.</p>
+    <div id="dir"></div>
+    </div>
+  </details>
+
+  <p class="note">The workflows are simplified examples based on practice in Türkiye in 2025–2026. Procedures, deadlines and the organizations involved change over time and vary by province.</p>
+</div>
+
+</div>
+<script>
+(()=>{
+const views={map:'view-map',flow:'view-flow'};
+const caseIds=['documentation', 'return', 'inkind', 'detention', 'shadow', 'rumour'];
+function show(v,setHash){
+  for(const k in views){document.getElementById(views[k]).hidden=k!==v;document.getElementById('vt-'+k).setAttribute('aria-selected',k===v?'true':'false')}
+  if(setHash){try{history.replaceState(null,'','#'+(v==='map'?'map':'workflows'))}catch(e){}}
+  window.dispatchEvent(new Event('resize'));
+}
+window.__shell={show};
+const h=(location.hash||'').slice(1);
+show(caseIds.includes(h)||h==='workflows'?'flow':'map',false);
+document.getElementById('vt-map').addEventListener('click',()=>show('map',true));
+document.getElementById('vt-flow').addEventListener('click',()=>show('flow',true));
+})();
+(()=>{
+const W=1180,H=980;
+const BANDS=[
+  {label:'Global',y:20,h:320},{label:'Regional',y:345,h:150},{label:'National',y:500,h:150},
+  {label:'Local',y:655,h:150},{label:'People, by legal status',short:'People',y:810,h:150,people:true}];
+const N=[
+ // Global · frameworks
+ {id:'conv51',k:'rule',bind:true,x:280,y:70,l:'1951 Convention\n+ 1967 Protocol',full:'Refugee Convention and Protocol',meta:'Binding treaty · 1951 / 1967',t:'Defines who is a refugee and sets non-refoulement, the ban on returning people to persecution. The core of the refugee regime.',tr:'TR: party, with limitation',trl:'Party, but keeps the geographical limitation: full refugee status only for people fleeing events in Europe.'},
+ {id:'gcr',k:'rule',bind:false,x:435,y:70,l:'Compact on\nRefugees',full:'Global Compact on Refugees',meta:'Non-binding political commitment · 2018',t:'Plan to share responsibility for refugees: ease pressure on host countries, build self-reliance, expand resettlement and support safe return.',tr:'TR: endorsed',trl:'Voted in favour in the UN General Assembly in 2018.'},
+ {id:'gcm',k:'rule',bind:false,x:590,y:70,l:'Compact for\nMigration',full:'Global Compact for Safe, Orderly and Regular Migration',meta:'Non-binding political commitment · 2018',t:'23 objectives on data, legal pathways, fair recruitment, border management and return. The first global framework covering all migrants.',tr:'TR: endorsed',trl:'Voted in favour in the UN General Assembly in December 2018 (152 in favour, 5 against, 12 abstentions).',deb:{pro:'A shared vocabulary and the first global framework for all migrants; because it is non-binding, decisions stay with states.',con:'Some governments voted against, arguing it could limit sovereignty over time; others see it as too weak to change practice.'}},
+ {id:'iloconv',k:'rule',bind:true,x:745,y:70,l:'ILO migrant\nconventions',full:'ILO conventions C97, C143 and C189',meta:'Binding for ratifying states · 1949 / 1975 / 2011',t:'Labour standards for migrant workers and domestic workers, including equal treatment at work.',tr:'TR: C189 not ratified',trl:'Türkiye has not ratified C189 on domestic workers, a sector where many migrant women work.'},
+ {id:'mwc90',k:'rule',bind:true,x:1055,y:70,l:'Migrant Workers\nConvention',full:'UN Convention on the Rights of All Migrant Workers and Members of Their Families',meta:'Binding treaty · 1990, in force 2003',t:'Rights for all migrant workers, including those in an irregular situation. Ratified mostly by countries of origin.',tr:'TR: party since 2004',trl:'Ratified in 2004. Türkiye reports to the UN Committee on Migrant Workers (CMW).'},
+ {id:'palermo',k:'rule',bind:true,x:900,y:70,l:'Palermo\nProtocols',full:'Protocols on trafficking in persons and smuggling of migrants',meta:'Binding treaties · 2000',t:'Separate trafficking, a crime against the person, from smuggling, a crime against a state’s border rules.',tr:'TR: party',trl:'Party to the UN Convention against Transnational Organized Crime (ratified 2003) and its protocols.'},
+ {id:'gp98',k:'rule',bind:false,x:125,y:70,l:'Guiding Principles\non IDPs',full:'Guiding Principles on Internal Displacement',meta:'Soft law · 1998',t:'The main international standard for people displaced inside their own country. Not a treaty.'},
+ // Global · organizations
+ {id:'unhcr',k:'org',x:310,y:280,l:'UNHCR',full:'UN Refugee Agency (UNHCR)',meta:'Founded 1950 · Geneva',t:'Protects refugees, asylum-seekers and stateless people and supervises the 1951 Convention. It cannot force a state to admit anyone.'},
+ {id:'unicef',k:'org',x:450,y:280,l:'UNICEF',full:'UN Children’s Fund (UNICEF)',meta:'Founded 1946',t:'Protects migrant and displaced children and supports education programmes for refugee children.'},
+ {id:'network',k:'umbrella',x:590,y:185,l:'UN Network on Migration',full:'UN Network on Migration',meta:'Umbrella network · created 2018 · coordinated by IOM',t:'An umbrella that brings UN entities working on migration under one roof. Its members coordinate their support to states in carrying out the Global Compact for Migration; the Network has no mandate of its own over migrants.'},
+ {id:'iom',k:'org',x:590,y:280,l:'IOM',full:'International Organization for Migration (IOM)',meta:'Founded 1951 · UN-related since 2016',t:'Runs assisted return, labour mobility and displacement tracking, and promotes fair recruitment.',deb:{pro:'Practical, flexible and present in almost every country, from emergencies to labour mobility.',con:'Largely project-funded by states, including for returns, and without a formal protection mandate.'}},
+ {id:'ilo',k:'org',x:730,y:280,l:'ILO',full:'International Labour Organization (ILO)',meta:'Founded 1919 · tripartite',t:'Sets and supervises labour standards. Governments, employers and workers sit at the same table.'},
+ {id:'ohchr',k:'org',x:1010,y:280,l:'UN Human Rights\nOffice (OHCHR)',full:'UN Human Rights Office (OHCHR)',meta:'Founded 1993',t:'Defends the human rights of every migrant regardless of status and supports the committee of the 1990 Convention.'},
+ {id:'undp',k:'org',x:170,y:280,l:'UNDP',full:'UN Development Programme (UNDP)',meta:'Founded 1965',t:'Supports national and local development and the resilience of communities, including areas that host large numbers of refugees.'},
+ {id:'wb',k:'org',x:870,y:280,l:'World Bank',full:'World Bank',meta:'Founded 1944',t:'Finances development in refugee-hosting areas and publishes remittance data.'},
+ // Regional
+ {id:'ecthr',k:'org',x:590,y:415,l:'Council of Europe\n& European Court',full:'Council of Europe and European Court of Human Rights',meta:'46 member states, including Türkiye',t:'Its court can stop returns that risk torture or inhuman treatment (Article 3 ECHR); its anti-torture committee visits places of detention.'},
+ {id:'lrc',k:'rule',bind:true,x:950,y:415,l:'Lisbon Recognition\nConvention',full:'Lisbon Recognition Convention',meta:'Binding treaty · 1997 · Council of Europe and UNESCO',t:'Common rules for recognising diplomas and periods of study across the European region.',tr:'TR: party',trl:'Party. The Council of Higher Education (YÖK) applies its principles when recognising foreign diplomas.'},
+ {id:'rrp',k:'org',x:230,y:415,l:'3RP regional\nresponse plan',full:'Regional Refugee and Resilience Plan (3RP)',meta:'Coordination plan · co-led by UNHCR and UNDP',t:'Joint plan and funding appeal for refugees and host communities in Türkiye and other countries neighbouring Syria.'},
+ {id:'eu',k:'org',x:410,y:415,l:'European Union',full:'European Union',meta:'27 member states',t:'Makes binding asylum and border law for its members, funds refugee programmes in Türkiye and runs Erasmus+ exchanges.',deb:{pro:'Supporting refugees in neighbouring host countries reaches many people per euro, and crossings and deaths in the Aegean fell sharply after 2016.',con:'Critics call it externalisation: responsibility and border control shift to Türkiye, and aid becomes tied to migration control.'}},
+ {id:'frontex',k:'org',x:770,y:415,l:'Frontex',full:'European Border and Coast Guard Agency (Frontex)',meta:'Founded 2004',t:'The EU’s border agency. It supports member states at external borders and with returns.',deb:{pro:'A shared external border needs a shared agency for surveillance, rescue support and returns.',con:'Allegations of involvement in pushbacks have raised questions about accountability and fundamental rights oversight.'}},
+ // National
+ {id:'law6458',k:'rule',bind:true,x:140,y:565,l:'National\nmigration law',full:'National migration and asylum law',meta:'Binding national law',t:'The country’s main law on foreigners and protection. It sets the rules for residence permits, international protection statuses and removal, and provides the legal basis for temporary protection.'},
+ {id:'origin',k:'state',x:740,y:565,l:'Country of\norigin',full:'Country of origin',meta:'State',t:'Issues passports, licenses recruitment agencies and protects its citizens abroad through its consulates. Many countries of origin depend heavily on remittances. In the labour case: Bangladesh.'},
+ {id:'turkiye',k:'state',x:590,y:565,l:'Host or destination\ncountry',full:'Host or destination country',meta:'State',t:'Decides who may enter, stay and work, which treaties to join and which statuses to grant. In the cases on this page: Türkiye for the Syrian family and the student, Qatar for the electrician.',deb:{lab:'Debate · example: Türkiye’s temporary protection model',pro:'Temporary protection gave quick legal status and access to health care and school to millions of Syrians.',con:'Because of the geographical limitation, most refugees never receive full refugee status, and temporary status can be deactivated or cancelled quickly.'}},
+ {id:'pmm',k:'state',x:440,y:565,l:'Migration\nauthority',full:'National migration authority',meta:'Public authority',t:'Registers foreigners, issues residence permits and decides on protection applications, usually through provincial or regional offices. In Türkiye: the Presidency of Migration Management.'},
+ {id:'kizilay',k:'org',x:290,y:565,l:'Red Crescent /\nRed Cross society',full:'National Red Crescent or Red Cross society',meta:'National society · auxiliary to public authorities',t:'Supports public authorities in humanitarian work: cash and in-kind assistance, emergency relief and family tracing. In Türkiye: Türk Kızılay, which runs Kızılaykart cash assistance.'},
+ {id:'yok',k:'state',x:890,y:565,l:'Higher education\nauthority',full:'Higher education authority',meta:'Public authority',t:'Sets admission rules for international students and decides on the recognition of foreign diplomas. In Türkiye: the Council of Higher Education (YÖK).'},
+ {id:'ytb',k:'state',x:1040,y:565,l:'Scholarship\nagency',full:'National scholarship agency',meta:'Public authority',t:'Funds and places international scholarship students. In Türkiye: YTB, which runs the Türkiye Scholarships programme.'},
+ // Local
+ {id:'ngos',k:'org',x:410,y:720,l:'NGOs & bar\nassociations',full:'NGOs and bar associations',meta:'Local and national civil society',t:'Legal aid, case management, psychosocial support, monitoring and advocacy. Often implement UN and EU-funded projects.'},
+ {id:'muni',k:'state',x:230,y:720,l:'Municipalities',full:'Municipalities',meta:'Local government',t:'Provide everyday services: social assistance, health referral, language courses.'},
+ {id:'univ',k:'org',x:950,y:720,l:'Universities',full:'Universities and their international offices',meta:'Public and foundation universities',t:'Admit international students, issue the documents needed for a residence permit and support students on campus.'},
+ {id:'networks',k:'market',x:590,y:720,l:'Migrant networks\n& diaspora',full:'Migrant networks and diaspora',meta:'Informal actor',t:'Family, friends and community groups who share information, housing and job contacts. Often the first source of help, and sometimes of risk.'},
+ {id:'employers',k:'market',x:770,y:720,l:'Employers &\nrecruiters',full:'Employers and recruitment agencies',meta:'Market actor',t:'Decide who is hired and on what terms. Recruitment fees and employer-tied visas shape migrants’ rights in practice as much as treaties do.'},
+ // People by status
+ {id:'tp',k:'people',x:380,y:870,l:'Temporary\nprotection',full:'People under temporary protection',meta:'Group-based status · e.g. Syrians in Türkiye',t:'A group-based status for people arriving in large numbers, without an individual procedure. It gives access to health care, school and the labour market under conditions.'},
+ {id:'ip',k:'people',x:170,y:870,l:'International\nprotection',full:'International protection applicants and status holders',meta:'Individual protection procedure',t:'Individual procedure under national law, leading to refugee status or another form of protection (in Türkiye: refugee, conditional refugee or subsidiary protection).'},
+ {id:'labour',k:'people',x:800,y:870,l:'Labour\nmigrants',full:'Labour migrants',meta:'Work-based residence',t:'People who move for work with a work permit or an employer-sponsored visa. Their rights depend largely on national rules and employers.'},
+ {id:'students',k:'people',x:1010,y:870,l:'International\nstudents',full:'International students',meta:'Student residence permit',t:'In the 2024–2025 academic year, 337,119 international students studied in Türkiye, according to YÖK data.'},
+ {id:'irregular',k:'people',x:590,y:870,l:'Irregular\nstatus',full:'People with irregular status',meta:'No valid status',t:'People without valid documents, including those who lost their status. Most exposed to detention, removal and exploitation.'}
+];
+// [from, to, type, relation, year, weight]
+const E=[
+ ['unhcr','conv51','law','supervises the Convention'],['turkiye','conv51','law','decides whether to join, and on what terms'],['ilo','iloconv','law','adopts and supervises'],
+ ['ohchr','mwc90','law','supports the treaty committee'],['turkiye','mwc90','law','decides whether to join'],['origin','mwc90','law','decides whether to join'],['turkiye','palermo','law','decides whether to join'],
+ ['turkiye','gcm','law','decides whether to endorse'],['origin','gcm','law','decides whether to endorse'],['turkiye','gcr','law','decides whether to endorse'],['turkiye','iloconv','law','decides whether to ratify'],['ecthr','turkiye','law','court jurisdiction over member states'],['ecthr','eu','law','members bound by the ECHR'],
+ ['turkiye','lrc','law','decides whether to join'],['origin','labour','law','passports, recruitment licences'],['turkiye','labour','law','visa and work permit rules'],['origin','employers','law','licenses recruitment agencies'],['turkiye','employers','law','regulates employers'],['turkiye','law6458','law','adopts'],['law6458','pmm','law','establishes the authority'],['law6458','tp','law','basis for temporary protection'],
+ ['law6458','ip','law','protection statuses'],['pmm','tp','law','registers, issues IDs'],['pmm','ip','law','registers and decides'],['pmm','students','law','student residence permits'],
+ ['pmm','irregular','law','apprehension and removal'],['yok','univ','law','sets admission rules'],['yok','students','law','diploma recognition'],['yok','lrc','law','applies its principles'],
+ ['iom','network','coord','coordinates'],['network','gcm','coord','follows up'],['unhcr','network','coord','member'],['ilo','network','coord','member'],['ohchr','network','coord','member'],
+ ['unicef','network','coord','member'],['unhcr','gcr','coord','leads follow-up'],['unhcr','gp98','coord','leads IDP protection cluster'],
+ ['iom','gp98','coord','tracks IDPs'],['eu','frontex','coord','EU agency',2004],['turkiye','pmm','coord','national authority'],
+ ['frontex','irregular','coord','border operations'],['unhcr','rrp','coord','co-leads with UNDP'],['undp','rrp','coord','co-leads with UNHCR'],['undp','network','coord','member'],['wb','network','coord','member'],['undp','turkiye','partner','development and resilience programmes'],['undp','muni','partner','local services and livelihoods'],['ngos','ohchr','coord','shadow reports to treaty bodies'],['ngos','rrp','coord','report to sectors'],['ngos','turkiye','coord','monitoring, advocacy'],
+ ['ecthr','lrc','coord','Council of Europe convention'],['kizilay','turkiye','coord','auxiliary to the state'],['ytb','univ','coord','places scholarship students'],
+ ['ilo','employers','coord','employers sit at the ILO'],['iom','employers','coord','fair recruitment standards'],
+ ['eu','turkiye','fund','EU–Türkiye Statement: €6 billion (FRIT)',2016,3],['eu','kizilay','fund','ESSN cash assistance (Türkiye)',2016,3],['eu','unhcr','fund','major donor'],
+ ['eu','iom','fund','return and reintegration projects'],['wb','turkiye','fund','development financing'],['unhcr','ngos','fund','funds partners'],['eu','ngos','fund','project grants'],
+ ['eu','univ','fund','Erasmus+ exchanges'],['ytb','students','fund','scholarships'],
+ ['pmm','unhcr','partner','cooperation on registration'],['pmm','iom','partner','returns, migration management'],['unicef','turkiye','partner','education, child protection'],
+ ['ilo','turkiye','partner','technical cooperation on labour'],['iom','ngos','partner','joint projects'],['ngos','tp','partner','legal aid, services'],['ngos','ip','partner','legal aid, counselling'],
+ ['ngos','irregular','partner','legal aid in detention'],['muni','tp','partner','local services'],['muni','ip','partner','local services'],['ngos','muni','partner','joint services'],
+ ['kizilay','tp','partner','cash assistance'],['labour','origin','market','remittances'],['univ','students','partner','admission, international office'],
+ ['employers','labour','market','recruitment and employment'],['employers','tp','market','formal and informal work'],['employers','irregular','market','informal work'],
+ ['networks','tp','market','information, housing, jobs'],['networks','labour','market','jobs through contacts'],['networks','students','market','peer support, housing'],
+ ['networks','irregular','market','contacts on routes']
+];
+const NOTES={
+ conv51:['Applies only to people outside their country of nationality; internally displaced people are not covered.','UNHCR and many legal scholars regard non-refoulement as customary international law, binding even on states that are not parties.','States decide who is a refugee through their own asylum procedures; UNHCR can do this where a state does not.'],
+ gcr:['Affirmed by the UN General Assembly in December 2018. It is not a treaty.','Progress is reviewed at the Global Refugee Forum, held every four years.','Built on the idea of sharing responsibility between host countries and other states.'],
+ gcm:['Adopted in Marrakech and endorsed by the UN General Assembly in December 2018.','Covers all migrants regardless of status and states that it creates no new legal obligations.','Reviewed every four years at the International Migration Review Forum.'],
+ iloconv:['Each convention binds only the states that ratify it.','C189 (2011) was the first international standard written specifically for domestic workers.','The ILO’s supervisory bodies review regular reports from ratifying states.'],
+ mwc90:['Covers the whole migration process: preparation, departure, transit, stay, work and return.','Most ratifying states are countries of origin; no major destination country in Western Europe or North America has ratified it.','Monitored by the Committee on Migrant Workers (CMW), which reviews state reports.'],
+ palermo:['Supplement the UN Convention against Transnational Organized Crime (2000).','Trafficking involves exploitation and does not require crossing a border; smuggling always involves an irregular border crossing, usually with the migrant’s agreement.','Smuggled migrants should not be prosecuted for the fact of having been smuggled (Smuggling Protocol, Article 5).'],
+ gp98:['Presented to the UN Commission on Human Rights in 1998; they restate existing human rights and humanitarian law.','National authorities have the primary duty to protect and assist internally displaced people.','In Africa, the Kampala Convention (2009) turned many of these principles into binding law.'],
+ unhcr:['Mandate covers refugees, asylum-seekers and stateless people, and in many crises also internally displaced people.','Funded almost entirely by voluntary contributions, mainly from states.','Palestine refugees in UNRWA’s areas of operation fall under UNRWA, not UNHCR.'],
+ unicef:['Works under the Convention on the Rights of the Child, which applies to every child regardless of migration status.','Main areas include education, child protection, health and nutrition.','Funded by voluntary contributions from governments and private donors.'],
+ network:['Executive Committee: DESA, ECLAC, ILO, IOM, OHCHR, UNDP, UNHCR, UNICEF, UNODC, the World Bank and WHO. IOM coordinates the Network and hosts its secretariat.','The Executive Committee sets strategic priorities and the annual workplan, sets up working groups and guides the Network’s reporting to the UN Secretary-General.','On this map: the members that work directly with the national and local actors below (UNHCR, UNICEF, IOM, ILO, OHCHR, UNDP and the World Bank).','Not on this map: DESA (global migration data and population research), ECLAC (the UN regional commission for Latin America and the Caribbean), UNODC (custodian of the Palermo Protocols) and WHO (health of refugees and migrants).','About 40 UN entities belong to the wider Network.'],
+ iom:['Coordinator and secretariat of the UN Network on Migration.','Became a UN-related organization in 2016; before that it worked outside the UN system.','Most of its budget is project funding earmarked by states.'],
+ ilo:['The only tripartite UN agency: governments, employers and workers decide together.','Its fair recruitment guidance says workers should not pay recruitment fees or related costs.','Its fundamental principles and rights at work apply to all workers, including migrants.'],
+ ohchr:['Leads the UN’s human rights work and supports the treaty bodies, including the Committee on Migrant Workers.','Promotes a human rights–based approach to borders, return and immigration detention.','NGOs can send information, often called shadow reports, to treaty bodies when a state is reviewed.'],
+ undp:['Executive Committee member of the UN Network on Migration.','Co-leads the 3RP with UNHCR and focuses on the resilience of host communities.','Works with national and local governments on livelihoods, public services and social cohesion.'],
+ wb:['Executive Committee member of the UN Network on Migration.','Finances programmes for refugees and host communities, for example through the IDA Window for Host Communities and Refugees.','Publishes global data on remittances.'],
+ ecthr:['The European Convention on Human Rights binds all 46 Council of Europe member states.','Article 3 is absolute: no one may be returned where they face a real risk of torture or inhuman or degrading treatment.','Under Rule 39 the Court can order interim measures to stop a removal while it examines a case.','Its anti-torture committee (CPT) visits places of detention, including immigration detention.'],
+ lrc:['Recognition is the default: a qualification should be recognised unless a substantial difference can be shown.','Asks states to find fair ways to assess refugees’ qualifications even without full documents (Article VII).','Prepared jointly by the Council of Europe and UNESCO.'],
+ rrp:['Brings together UN agencies, NGOs and governments in the countries neighbouring Syria.','Combines refugee protection with support for the resilience of host communities.','Co-led by UNHCR and UNDP; country chapters are prepared with national governments.'],
+ eu:['Its asylum and migration rules bind its member states, not third countries.','The Pact on Migration and Asylum, adopted in 2024, applies from 2026.','Funds programmes in neighbouring and partner countries, often linked to cooperation on migration.'],
+ frontex:['Founded in 2004; its mandate and staff were expanded in 2016 and 2019.','Supports member states; responsibility for border control stays with them.','Has a Fundamental Rights Officer and a complaints mechanism.'],
+ law6458:['Defines who may enter and stay, and on what terms.','Sets the procedure and statuses for international protection, usually building on the 1951 Convention and regional law.','Regulates detention and removal, including the right to appeal.'],
+ origin:['Citizens have the right to enter their own country (ICCPR, Article 12).','Some countries of origin have ministries or agencies for citizens abroad and their diaspora.','Bilateral labour agreements with destination countries can set rules on recruitment and protection.'],
+ turkiye:['States decide on admission, but treaty obligations such as non-refoulement limit that power.','The same state can be a country of origin, transit and destination at the same time.','Joining a treaty brings reporting duties and review by international bodies.'],
+ pmm:['In many countries this role is split between an interior ministry, border police and a separate asylum office.','Its decisions can usually be challenged in national courts.','Often works with UN agencies and NGOs on interpretation, vulnerability screening and referrals.'],
+ kizilay:['Part of the International Red Cross and Red Crescent Movement, together with the ICRC and the IFRC.','Acts as an auxiliary to public authorities in humanitarian work while keeping its independence.','Runs the Restoring Family Links service together with the ICRC.'],
+ yok:['Usually sets admission requirements for international students and approves study programmes.','In countries that are party to the Lisbon Recognition Convention, diploma recognition follows its principles.'],
+ ytb:['Government scholarships are also used as a tool of public diplomacy.','Scholarship holders usually still need a student residence permit from the migration authority.'],
+ ngos:['Range from small community associations to national organizations and bar associations offering free legal aid.','Often implement projects funded by UN agencies, the EU or other donors.','Can submit information to UN treaty bodies and regional human rights mechanisms.'],
+ muni:['Deliver services where migrants actually live: social assistance, schools, health referrals and language courses.','Usually have little say over migration law, which is set nationally.','Some cities join international networks on migration and integration.'],
+ univ:['Admission rules and fees for international students vary widely between countries and institutions.','International offices issue the documents students need for visas and residence permits.','Exchange programmes such as Erasmus+ support short study periods abroad.'],
+ networks:['Migration research shows that networks lower the cost and risk of moving and help newcomers find housing and jobs.','They can also spread misinformation and expose people to exploitation.','Remittances sent through family networks are a major source of income in many countries of origin.'],
+ employers:['Recruitment fees and debts can leave workers dependent on one employer.','Employer-tied (sponsorship) visa systems limit a worker’s ability to change jobs.','Fair recruitment standards say recruitment costs should be paid by employers, not workers.'],
+ tp:['Used when large numbers arrive at once and individual procedures are not practical.','Protection is collective and usually temporary; rights and duration depend on the national regulation.','The EU granted temporary protection to people fleeing Ukraine in 2022.'],
+ ip:['Applicants are protected from removal while their claim is examined.','Recognised refugees have rights set by the 1951 Convention, such as access to courts and travel documents.','Procedures can take months or years; legal aid can make a large difference to the outcome.'],
+ labour:['About 168 million international migrant workers in 2022, close to 60 per cent of all international migrants (IOM, World Migration Report 2026).','Rights depend on the visa type, the employer and which ILO and UN conventions the destination has ratified.'],
+ students:['Close to 7 million international students worldwide in 2022 (IOM, World Migration Report 2026).','Many countries allow students to work part-time and to stay on to look for work after graduating.'],
+ irregular:['Irregular status often follows an overstayed visa or a lost permit, not only an irregular border crossing.','Human rights apply to everyone regardless of status, including access to emergency health care and to courts.','Fear of detection keeps many people from reporting abuse or asking for help.']
+};
+const TYPE_NAME={law:'Rules & authority',coord:'Coordination',fund:'Funding',partner:'Field partnership',market:'Market & informal'};
+const CASES={
+ c1:{type:'Displacement & protection',title:'A Syrian family crosses into Türkiye',nodes:['tp','turkiye','pmm','law6458','conv51','gcr','unhcr','unicef','eu','ecthr','rrp','kizilay','ngos','muni','networks'],
+  t:'The densest part of the map. Türkiye decides their status: temporary protection rather than refugee status, because of the geographical limitation. UNHCR, the EU, Türk Kızılay and NGOs fund, support and monitor around that decision, and every level is involved.'},
+ c2:{type:'Labour migration',title:'A Bangladeshi electrician takes a job in Qatar',nodes:['labour','origin','turkiye','employers','networks','iloconv','mwc90','gcm','ilo','iom','ohchr','network'],
+  t:'Two states and the market decide almost everything here. A recruitment agency licensed in the country of origin and an employer in the destination country set the terms of the job, and the destination’s visa and work permit rules tie the worker to that employer. Bangladesh, the country of origin, ratified the 1990 Convention in 2011; Qatar, the destination, has not. Global standards and soft law add pressure, but not obligations.'},
+ c3:{type:'Student migration',title:'An international student comes to study in Ankara',nodes:['students','univ','yok','ytb','pmm','law6458','lrc','eu','networks'],
+  t:'Nothing lights up at global level. Admission, scholarships, residence permits and diploma recognition are decided by national institutions, with a regional layer from the Lisbon Recognition Convention and Erasmus+ exchanges. Regular migration is governed mostly by states.'}
+};
+const STEPS=[
+ {title:'Money and priorities',nodes:['eu','unhcr','iom','turkiye','wb','kizilay'],t:'It starts with donors. The EU, individual states and development banks decide what to fund and where, usually through calls for proposals with fixed themes such as protection, education or jobs.'},
+ {title:'Grants move down the chain',nodes:['eu','unhcr','iom','ngos','kizilay'],t:'UN agencies, the Red Crescent and large international NGOs sign the grant. They then work with local NGOs as implementing partners, because local groups already have the staff, language and trust on the ground.'},
+ {title:'Delivery in the field',nodes:['ngos','tp','ip','muni','pmm'],t:'Case workers meet families, give legal advice and refer people to the migration authority, hospitals or schools. Municipalities add everyday services. This is where most staff in the sector actually work.'},
+ {title:'Monitoring and reporting',nodes:['ngos','unhcr','iom','eu','rrp'],t:'Information flows back up: beneficiary numbers, indicators, monthly reports, audits. Sector reports to the 3RP and data such as UNHCR’s annual Global Trends report draw on it.'},
+ {title:'Evidence and advocacy',nodes:['ngos','pmm','turkiye','ecthr'],t:'NGOs document what goes wrong, publish reports and, through bar associations, take cases to court, up to the European Court of Human Rights. This is how field experience reaches policy.'},
+ {title:'The project ends',nodes:['ngos','tp','ip'],t:'Most projects run one to three years. When the grant ends, staff may leave and services may stop unless a new call or the state takes over. This raises a long-term question: who should pay for these services?'}
+];
+const NODE_FLOW={pmm:['documentation','return','detention'],turkiye:['documentation','return','detention'],law6458:['documentation','detention'],unhcr:['documentation','return','inkind'],
+ ngos:['documentation','return','inkind','detention','shadow','rumour'],muni:['inkind'],kizilay:['documentation','inkind'],ecthr:['detention'],rrp:['return','inkind'],
+ networks:['return','inkind','detention'],ohchr:['shadow'],mwc90:['shadow'],tp:['documentation','return','inkind'],ip:['detention'],irregular:['detention']};
+
+const byId=Object.fromEntries(N.map(n=>[n.id,n]));
+const ns='http://www.w3.org/2000/svg';
+const mk=(tag,attrs,parent)=>{const el=document.createElementNS(ns,tag);for(const k in attrs)el.setAttribute(k,attrs[k]);parent&&parent.appendChild(el);return el};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const gB=document.getElementById('bands'),gE=document.getElementById('edges'),gL=document.getElementById('elabels'),gN=document.getElementById('nodes');
+const panel=document.getElementById('panel');
+const reduce=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+N.forEach(n=>{n.cx=n.x;n.cy=n.y;n.band=BANDS.findIndex(b=>n.y>=b.y&&n.y<=b.y+b.h);n.lines=n.l.split('\n').length+(n.tr?1:0)});
+BANDS.forEach(b=>{const g=mk('g',{class:'band'+(b.people?' pband':'')},gB);mk('rect',{x:0,y:b.y,width:W,height:b.h},g);mk('text',{x:16,y:b.y+20},g).textContent=b.label});
+const edgeEls=E.map(([s,d,type,rel,yr,w])=>{
+  const el=mk('path',{class:'edge '+type},gE);
+  if(type==='law'||type==='fund')el.setAttribute('marker-end',`url(#m-${type})`);
+  return {s,d,type,rel,yr,w,el,label:rel+(yr?' · '+yr:'')}});
+const DOODLE={network:'umbrella',origin:'flag',turkiye:'flag',ecthr:'scales',rrp:'clipboard',wb:'coins',ngos:'heart',kizilay:'aid',univ:'book',employers:'briefcase',networks:'network',tp:'tent',ip:'shield',labour:'hardhat',students:'cap',irregular:'noid'};
+const rad=n=>n.k==='state'?30:n.k==='rule'?27:n.k==='umbrella'?39:25;
+const nodeEls={};
+N.forEach(n=>{
+  const cls='node '+n.k+(n.k==='rule'?(n.bind?' bind':' soft'):'')+(BANDS[n.band].people?' inpeople':'');
+  const g=mk('g',{class:cls,tabindex:0,role:'button','aria-label':n.full,transform:`translate(${n.x},${n.y})`},gN);
+  if(n.k==='rule')mk('rect',{class:'shape',x:-24,y:-24,width:48,height:48,rx:5},g);
+  else if(n.k==='state')mk('path',{class:'shape',d:'M0 -28 L28 0 L0 28 L-28 0Z'},g);
+  else if(n.k==='umbrella'){mk('circle',{class:'ring',r:38},g);mk('circle',{class:'shape',r:30},g)}
+  else mk('circle',{class:'shape',r:24},g);
+  const dd=DOODLE[n.id]||(n.k==='rule'?(n.bind?'doc':'bubble'):n.k==='state'?'stamp':n.k==='market'?'network':n.k==='people'?'person':'building');
+  const ds=n.k==='state'?22:n.k==='people'?28:n.k==='umbrella'?32:26;
+  mk('use',{href:'#dd-'+dd,x:-ds/2,y:-ds/2,width:ds,height:ds,class:'doodle'},g);
+  const t=mk('text',{y:(n.k==='state'?28:n.k==='umbrella'?38:24)+16},g);
+  n.l.split('\n').forEach((ln,i)=>{const s=mk('tspan',{x:0,dy:i?15:0},t);s.textContent=ln});
+  if(n.tr){const s=mk('tspan',{x:0,dy:15,class:'trl'},t);s.textContent=n.tr}
+  g.addEventListener('click',()=>selectNode(n.id));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(n.id)}});
+  nodeEls[n.id]=g});
+
+function ctrl(e){const a=byId[e.s],b=byId[e.d],mx=(a.cx+b.cx)/2,my=(a.cy+b.cy)/2,same=Math.abs(a.cy-b.cy)<40;
+  return {a,b,c:{x:mx,y:same?my-Math.min(80,Math.abs(a.cx-b.cx)*0.2+28):my}}}
+function ends(e){const {a,b,c}=ctrl(e);
+  let dx=c.x-a.cx,dy=c.y-a.cy,L=Math.hypot(dx,dy)||1;const sx=a.cx+dx/L*rad(a),sy=a.cy+dy/L*rad(a);
+  dx=b.cx-c.x;dy=b.cy-c.y;L=Math.hypot(dx,dy)||1;const pad=(e.type==='law'||e.type==='fund')?6:0;
+  const ex=b.cx-dx/L*(rad(b)+pad),ey=b.cy-dy/L*(rad(b)+pad);return {sx,sy,ex,ey,c}}
+function pt(e,t){const {sx,sy,ex,ey,c}=ends(e),u=1-t;return {x:u*u*sx+2*u*t*c.x+t*t*ex,y:u*u*sy+2*u*t*c.y+t*t*ey}}
+function draw(){
+  N.forEach(n=>nodeEls[n.id].setAttribute('transform',`translate(${n.cx.toFixed(1)},${n.cy.toFixed(1)})`));
+  edgeEls.forEach(e=>{const {sx,sy,ex,ey,c}=ends(e);e.el.setAttribute('d',`M${sx.toFixed(1)} ${sy.toFixed(1)} Q${c.x.toFixed(1)} ${c.y.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`)});
+}
+function layoutTargets(act){
+  const T={};N.forEach(n=>T[n.id]={x:n.x,y:n.y});
+  if(!act)return T;
+  const groups={};N.forEach(n=>{if(act.has(n.id))(groups[n.y]=groups[n.y]||[]).push(n)});
+  const L=110,Rr=1070;
+  Object.values(groups).forEach(g=>{
+    const ns=g.sort((p,q)=>p.x-q.x),k=ns.length;
+    if(k===1)return;
+    const span=Math.min(Rr-L,(k-1)*260),mean=ns.reduce((s,n)=>s+n.x,0)/k,start=Math.min(Rr-span,Math.max(L,mean-span/2));
+    ns.forEach((n,i)=>T[n.id]={x:start+i*span/(k-1),y:n.y});
+  });
+  return T;
+}
+let anim=0;
+function animateTo(T,done){
+  cancelAnimationFrame(anim);
+  const from={};N.forEach(n=>from[n.id]={x:n.cx,y:n.cy});
+  const dur=reduce()?0:450,t0=performance.now();
+  const frame=now=>{
+    const p=dur?Math.min(1,(now-t0)/dur):1,q=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    N.forEach(n=>{n.cx=from[n.id].x+(T[n.id].x-from[n.id].x)*q;n.cy=from[n.id].y+(T[n.id].y-from[n.id].y)*q});
+    draw();
+    if(p<1)anim=requestAnimationFrame(frame);else if(done)done();
+  };
+  if(!dur){frame(t0);return}
+  anim=requestAnimationFrame(frame);
+}
+function drawLabels(list){
+  gL.innerHTML='';const boxes=[];
+  N.forEach(n=>{if(nodeEls[n.id].classList.contains('off'))return;
+    boxes.push({x:n.cx-32,y:n.cy-32,w:64,h:64,node:1});
+    let tb=null;try{const t=[...nodeEls[n.id].querySelectorAll('text')];if(t.length){const bs=t.map(x=>x.getBBox()).filter(b=>b.width);if(bs.length){const x0=Math.min(...bs.map(b=>b.x)),y0=Math.min(...bs.map(b=>b.y)),x1=Math.max(...bs.map(b=>b.x+b.width)),y1=Math.max(...bs.map(b=>b.y+b.height));tb={x:n.cx+x0-4,y:n.cy+y0-2,w:x1-x0+8,h:y1-y0+4,node:1}}}}catch(_){}
+    boxes.push(tb||{x:n.cx-68,y:n.cy+28,w:136,h:n.lines*15+8,node:1})});
+  const hit=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h;
+  const elen=e=>{const a=byId[e.s],b=byId[e.d];return Math.hypot(a.cx-b.cx,a.cy-b.cy)};
+  [...list].sort((p,q)=>elen(p)-elen(q)).forEach(e=>{
+    const w=e.label.length*6.3+18,h=22;let best=null,score=1e9;
+    const p0=pt(e,.45),p1=pt(e,.55);let nx=-(p1.y-p0.y),ny=p1.x-p0.x;const nl=Math.hypot(nx,ny)||1;nx/=nl;ny/=nl;
+    for(const t of [.5,.42,.58,.34,.66,.27,.73,.2,.8]){
+      for(const o of [0,16,-16,30,-30,44,-44]){
+        const p=pt(e,t),cx=p.x+nx*o,cy=p.y+ny*o,r={x:cx-w/2,y:cy-h/2,w,h};
+        const s=boxes.reduce((a,b)=>a+(hit(r,b)?10:0),0)+Math.abs(t-.5)*2+Math.abs(o)/40;
+        if(s<score){best=r;score=s}
+      }
+      if(score<1)break;
+    }
+    boxes.push(best);
+    const g=mk('g',{class:'lab'},gL);
+    mk('title',{},g).textContent=`${byId[e.s].full} → ${byId[e.d].full}: ${e.label} (${TYPE_NAME[e.type]})`;
+    mk('rect',{x:best.x,y:best.y,width:w,height:h,rx:11,class:'lbg '+e.type},g);
+    mk('text',{x:best.x+w/2,y:best.y+h/2+1,class:'elabel'},g).textContent=e.label;
+  });
+}
+const types={law:true,coord:true,fund:true,partner:true,market:true};
+const visible=e=>types[e.type];
+function paint(act,actE,labelEdges,sel){
+  N.forEach(n=>{const el=nodeEls[n.id],off=!!act&&!act.has(n.id);
+    el.classList.toggle('off',off);el.setAttribute('tabindex',off?'-1':'0');el.classList.toggle('sel',n.id===sel)});
+  edgeEls.forEach(e=>e.el.classList.toggle('off',!visible(e)||(!!actE&&!actE.has(e))));
+  gL.innerHTML='';
+  const labels=(labelEdges||[]).filter(visible);
+  animateTo(layoutTargets(act),()=>drawLabels(labels));
+}
+function pressed(which){
+  document.querySelectorAll('.case[data-case]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.case===which?'true':'false'));
+  document.getElementById('cycle').setAttribute('aria-pressed',which==='cycle'?'true':'false');
+}
+function wire(){panel.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>selectNode(b.dataset.go)));
+  panel.querySelectorAll('[data-case-go]').forEach(b=>b.addEventListener('click',()=>showCase(b.dataset.caseGo)));
+  panel.querySelectorAll('[data-flow]').forEach(b=>b.addEventListener('click',()=>{if(window.__shell)window.__shell.show('flow',true);if(window.__flow)window.__flow.openCase(b.dataset.flow);window.scrollTo({top:0,behavior:reduce()?'auto':'smooth'})}))}
+function levelCounts(set){return BANDS.map((b,bi)=>({name:b.short||b.label,n:N.filter(x=>x.band===bi&&set.has(x.id)).length}))}
+function levelsHTML(set){const c=levelCounts(set),mx=Math.max(1,...c.map(x=>x.n));
+  return `<div class="levels">${c.map(x=>`<span class="lt">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/mx*100}%"></i></span><span class="ct">${x.n}</span>`).join('')}</div>`}
+function flowChips(id){const ids=NODE_FLOW[id]||[],F=window.__flow;if(!ids.length||!F)return '';
+  const items=ids.map(c=>F.cases.find(x=>x.id===c)).filter(Boolean);if(!items.length)return '';
+  return `<span class="kicker">In the field workflows</span><div class="chips">${items.map(c=>`<button class="chip" data-flow="${c.id}">${esc(c.tab)}</button>`).join('')}</div>`}
+let state={mode:'case',c:'c1'};
+function selectNode(id){
+  state={mode:'node',id};pressed(null);
+  const n=byId[id],links=edgeEls.filter(e=>(e.s===id||e.d===id)&&visible(e));
+  const act=new Set([id,...links.map(e=>e.s===id?e.d:e.s)]);
+  paint(act,new Set(links),links,id);
+  panel.innerHTML=`<span class="kicker">${esc(n.meta)}</span><h2>${esc(n.full)}</h2><p>${esc(n.t)}</p>`+
+   (n.trl?`<div class="box"><span class="kicker">Example: Türkiye’s position</span><p>${esc(n.trl)}</p></div>`:'')+
+   (n.deb?`<div class="box deb"><span class="kicker">${esc(n.deb.lab||'Debate')}</span><p><b>Supporters:</b> ${esc(n.deb.pro)}</p><p><b>Critics:</b> ${esc(n.deb.con)}</p></div>`:'')+
+   ((NOTES[id]||[]).length?`<span class="kicker">Notes</span><ul class="notes">${NOTES[id].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'')+
+   flowChips(id);
+  wire();
+}
+function showCase(c){
+  state={mode:'case',c};pressed(c);const cs=CASES[c],act=new Set(cs.nodes),i=Object.keys(CASES).indexOf(c)+1;
+  const links=edgeEls.filter(e=>act.has(e.s)&&act.has(e.d));
+  paint(act,new Set(links),[],null);
+  panel.innerHTML=`<span class="kicker">Case ${i} · ${esc(cs.type)}</span><h2>${esc(cs.title)}</h2><p>${esc(cs.t)}</p><p class="meta">Select an actor to see what each link means.</p><span class="kicker">Actors by level</span>${levelsHTML(act)}<span class="kicker">Actors involved</span><ul>${cs.nodes.map(id=>`<li><button data-go="${id}">${esc(byId[id].full)}</button></li>`).join('')}</ul>`;
+  wire();
+}
+function showAll(){
+  state={mode:'all'};pressed(null);paint(null,null,[],null);
+  panel.innerHTML=`<span class="kicker">Overview</span><h2>${N.length} actors, ${E.length} links</h2><p>Levels run from global at the top to local, with people grouped by legal status at the bottom. Arrows show the direction of authority or money. Squares are treaties and laws: solid if binding, dashed if not.</p><span class="kicker">Where to start</span><ul><li><button data-case-go="c1">Displacement &amp; protection</button></li><li><button data-case-go="c2">Labour migration</button></li><li><button data-case-go="c3">Student migration</button></li><li><button data-go="turkiye">How states choose which treaties to join</button></li></ul>`;
+  wire();
+}
+function showStep(i){
+  state={mode:'step',i};pressed('cycle');
+  const st=STEPS[i],act=new Set(st.nodes),links=edgeEls.filter(e=>act.has(e.s)&&act.has(e.d));
+  paint(act,new Set(links),[],null);
+  panel.innerHTML=`<span class="kicker">Follow a project · step ${i+1} of ${STEPS.length}</span><h2>${esc(st.title)}</h2><p>${esc(st.t)}</p><div class="stepnav"><span class="count">${i+1} / ${STEPS.length}</span><button id="prev" ${i===0?'disabled':''}>Back</button><button id="next">${i===STEPS.length-1?'Finish':'Next'}</button></div>`;
+  document.getElementById('prev').addEventListener('click',()=>showStep(i-1));
+  document.getElementById('next').addEventListener('click',()=>i===STEPS.length-1?showAll():showStep(i+1));
+}
+function refresh(){state.mode==='node'?selectNode(state.id):state.mode==='case'?showCase(state.c):state.mode==='step'?showStep(state.i):showAll()}
+function renderCompare(){
+  const host=document.getElementById('compare');
+  host.innerHTML=Object.entries(CASES).map(([cid,cs],i)=>{
+    const act=new Set(cs.nodes);
+    let svg=`<svg class="mini" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cs.title)}: actors involved at each level">`;
+    BANDS.forEach(b=>svg+=`<rect class="${b.people?'mp':'mb'}" x="0" y="${b.y}" width="${W}" height="${b.h}"/>`);
+    E.forEach(([s,d,type])=>{if(act.has(s)&&act.has(d)){const a=byId[s],b=byId[d];svg+=`<line class="medge ${type}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`}});
+    N.forEach(n=>{const on=act.has(n.id);svg+=`<circle class="${on?(n.k==='people'?'mpeople':'mon'):'moff'}" cx="${n.x}" cy="${n.y}" r="${on?24:10}"/>`});
+    BANDS.forEach(b=>svg+=`<text class="mlab" x="12" y="${b.y+32}">${esc(b.short||b.label)}</text>`);
+    svg+='</svg>';
+    return `<article class="ccard"><span class="kicker">Case ${i+1} · ${esc(cs.type)}</span><h3>${esc(cs.title)}</h3>${svg}${levelsHTML(act)}<button class="open" data-open="${cid}">Open on the map</button></article>`;
+  }).join('');
+  host.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{showCase(b.dataset.open);document.getElementById('mapmain').scrollIntoView({behavior:reduce()?'auto':'smooth',block:'start'})}));
+}
+document.querySelectorAll('.ftype').forEach(b=>b.addEventListener('click',()=>{const t=b.dataset.type;types[t]=!types[t];b.setAttribute('aria-pressed',types[t]);refresh()}));
+document.querySelectorAll('.case[data-case]').forEach(b=>b.addEventListener('click',()=>state.mode==='case'&&state.c===b.dataset.case?showAll():showCase(b.dataset.case)));
+document.getElementById('cycle').addEventListener('click',()=>state.mode==='step'?showAll():showStep(0));
+document.getElementById('reset').addEventListener('click',showAll);
+document.getElementById('map').addEventListener('click',e=>{if(dragged){dragged=false;return}if(e.target.id==='map'||e.target.closest('.band'))showAll()});
+const svgEl=document.getElementById('map');let vb={x:0,y:0,w:W,h:H},drag=null,dragged=false;
+function setVB(){svgEl.setAttribute('viewBox',`${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${vb.h.toFixed(1)}`);svgEl.classList.toggle('zoomed',vb.w<W-1)}
+function clampVB(){vb.x=Math.min(Math.max(vb.x,0),W-vb.w);vb.y=Math.min(Math.max(vb.y,0),H-vb.h)}
+function zoomBy(f,cx,cy){const nw=Math.min(W,Math.max(W/6,vb.w*f)),nh=nw*H/W;if(cx==null){cx=vb.x+vb.w/2;cy=vb.y+vb.h/2}
+  const rx=(cx-vb.x)/vb.w,ry=(cy-vb.y)/vb.h;vb={x:cx-rx*nw,y:cy-ry*nh,w:nw,h:nh};clampVB();setVB()}
+function toSvg(e){const r=svgEl.getBoundingClientRect();return {x:vb.x+(e.clientX-r.left)/r.width*vb.w,y:vb.y+(e.clientY-r.top)/r.height*vb.h}}
+svgEl.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const p=toSvg(e);zoomBy(e.deltaY>0?1.12:1/1.12,p.x,p.y)},{passive:false});
+svgEl.addEventListener('pointerdown',e=>{dragged=false;if(vb.w>=W-1||e.target.closest('.node'))return;drag={x:e.clientX,y:e.clientY,vx:vb.x,vy:vb.y};svgEl.setPointerCapture(e.pointerId);svgEl.classList.add('panning')});
+svgEl.addEventListener('pointermove',e=>{if(!drag)return;const r=svgEl.getBoundingClientRect(),dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)dragged=true;vb.x=drag.vx-dx/r.width*vb.w;vb.y=drag.vy-dy/r.height*vb.h;clampVB();setVB()});
+const endDrag=()=>{drag=null;svgEl.classList.remove('panning')};
+svgEl.addEventListener('pointerup',endDrag);svgEl.addEventListener('pointercancel',endDrag);
+document.getElementById('zin').addEventListener('click',()=>zoomBy(1/1.3));
+document.getElementById('zout').addEventListener('click',()=>zoomBy(1.3));
+document.getElementById('zfit').addEventListener('click',()=>{vb={x:0,y:0,w:W,h:H};setVB()});
+window.__gov={selectNode:id=>{if(byId[id])selectNode(id)},showCase,name:id=>byId[id]?byId[id].full:id,has:id=>!!byId[id]};
+draw();renderCompare();showCase('c1');
+})();
+(()=>{
+const LEVELS=[
+ {id:'g',name:'Global',desc:'UN bodies, international networks and organizations working across countries'},
+ {id:'r',name:'Regional',desc:'European and other regional courts, bodies and NGO networks'},
+ {id:'n',name:'National',desc:'Ministries, national NGOs, coalitions and country offices'},
+ {id:'l',name:'Local',desc:'Field offices, local NGOs, provincial authorities and community groups'}];
+const LV=Object.fromEntries(LEVELS.map(l=>[l.id,l]));
+const FAM={
+ intl:{name:'International',c:'--intl'},pub:{name:'Public',c:'--pub'},prot:{name:'Protection & legal',c:'--prot'},
+ care:{name:'Health & wellbeing',c:'--care'},needs:{name:'Needs & opportunity',c:'--needs'},
+ comm:{name:'Community-based',c:'--comm'},evid:{name:'Evidence, advocacy & networks',c:'--evid'}};
+const TYPES=[
+ {id:'intl',f:'intl',name:'International bodies & INGOs',does:'UN agencies and committees, European human rights bodies, the Red Cross and Red Crescent network and large international NGOs. They fund, set standards, review states and sometimes deliver services.',w:['Programme officer','Protection officer','Committee member','Reintegration officer']},
+ {id:'pub',f:'pub',name:'Public institutions',does:'Ministries, the migration authority and its provincial offices, courts, prosecutors, hospitals and schools. They take the binding decisions.',w:['Migration expert','State social worker','Judge','Prosecutor']},
+ {id:'prot',f:'prot',name:'Protection & case management NGOs',does:'Follow one person or family over time: assess needs, refer to services and check that the referrals work.',w:['Case worker','Protection counsellor','Interpreter']},
+ {id:'legal',f:'prot',name:'Legal aid NGOs & bar associations',does:'Give free legal advice and representation in asylum, detention, labour, family and media cases.',w:['Lawyer','Legal counsellor','Paralegal']},
+ {id:'child',f:'prot',name:'Child protection NGOs',does:'Identify children at risk, run child-friendly spaces and make sure decisions follow the child’s best interests.',w:['Child protection case worker','Street outreach worker','Child-friendly space facilitator']},
+ {id:'gbv',f:'prot',name:'Women’s organizations',does:'Support women and girls facing violence through safe spaces, case management and empowerment programmes.',w:['GBV case worker','Women’s centre counsellor']},
+ {id:'traf',f:'prot',name:'Anti-trafficking organizations',does:'Spot signs of trafficking, accompany survivors through identification and support their recovery.',w:['Outreach worker','Victim support worker','Shelter social worker']},
+ {id:'lgbti',f:'prot',name:'LGBTI+ refugee support groups',does:'Offer peer support and safe referrals for LGBTI+ people, who often face extra risks in both origin and host countries.',w:['Peer counsellor','Case worker']},
+ {id:'health',f:'care',name:'Health & psychosocial NGOs',does:'Connect people to the health system and provide mental health and psychosocial support (MHPSS).',w:['Health mediator','Community health worker','Psychologist','Psychosocial support facilitator']},
+ {id:'relief',f:'needs',name:'Humanitarian relief organizations',does:'Meet urgent needs: food, hygiene items, clothing, cash and first aid. National Red Cross and Red Crescent societies also run family tracing.',w:['Field assessment officer','Distribution officer','Cash assistance officer','Information management officer','Family tracing officer','Volunteer']},
+ {id:'sar',f:'needs',name:'Search & rescue NGOs',does:'Operate rescue ships and aircraft on sea routes and document what happens at sea.',w:['Rescue crew','Ship medic','Cultural mediator']},
+ {id:'edu',f:'needs',name:'Education NGOs',does:'Help children enrol in school and run language, catch-up and homework support classes.',w:['Education facilitator','Language teacher']},
+ {id:'liv',f:'needs',name:'Livelihoods NGOs',does:'Support access to legal work through job counselling, vocational training and work permit guidance.',w:['Job counsellor','Vocational trainer']},
+ {id:'labour',f:'needs',name:'Labour rights groups & unions',does:'Defend workers’ rights through helplines, information and collective action in sectors where migrants work.',w:['Helpline operator','Labour rights counsellor']},
+ {id:'comm',f:'comm',name:'Refugee-led & community organizations',does:'Founded and run by migrants themselves. Often the first place people turn to, and a bridge between communities and services.',w:['Community volunteer','Community leader']},
+ {id:'faith',f:'comm',name:'Faith-based organizations',does:'Mosques, churches and religious charities that provide aid, shelter and volunteers, often at neighbourhood level.',w:['Volunteer coordinator','Volunteer']},
+ {id:'net',f:'evid',name:'Umbrella networks & coalitions',does:'Bring many organizations together: national NGO platforms, issue coalitions and regional networks. They coordinate, share information and speak with one voice.',w:['Coalition coordinator','Network policy officer']},
+ {id:'research',f:'evid',name:'Research, monitoring & media NGOs',does:'Collect data, monitor services and the media, check facts and publish evidence that others use for decisions.',w:['Field researcher','M&E officer','Fact-checker','Social media monitor']},
+ {id:'rights',f:'evid',name:'Human rights & advocacy organizations',does:'Monitor detention and borders, report violations and push for changes in law and practice.',w:['Advocacy officer','Detention monitor']},
+ {id:'press',f:'evid',name:'Press freedom & journalists’ organizations',does:'Defend journalists who report on migration, monitor trials and attacks, and train reporters in safety and ethics.',w:['Press freedom monitor','Association volunteer','Digital security trainer']}
+];
+const T=Object.fromEntries(TYPES.map(t=>[t.id,t]));
+const ORDER=TYPES.map(t=>t.id);
+const EX={
+ intl:[['UNHCR Türkiye','refugee protection, helpline, funding of NGO partners'],['IOM Türkiye','migration management, assisted return, counter-trafficking'],['UNICEF Türkiye','child protection and education programmes'],['UNFPA Türkiye','women’s health and GBV services'],['Danish Refugee Council (DRC)','international NGO with protection and livelihoods work in Türkiye']],
+ pub:[['Göç İdaresi Başkanlığı','Presidency of Migration Management and its provincial directorates'],['Aile ve Sosyal Hizmetler Bakanlığı','Ministry of Family and Social Services, including state care for children'],['ŞÖNİM','Violence Prevention and Monitoring Centres'],['Göçmen Sağlığı Merkezleri','Migrant Health Centres of the Ministry of Health'],['YİMER 157','foreigners’ communication centre and helpline'],['TİHEK','Human Rights and Equality Institution of Türkiye, which visits places of detention']],
+ prot:[['SGDD-ASAM','Association for Solidarity with Asylum Seekers and Migrants; psychosocial, legal and health counselling in many provinces'],['İnsan Kaynağını Geliştirme Vakfı (İKGV)','social workers supporting refugees’ access to rights'],['Hayata Destek (Support to Life)','protection and case management in several provinces']],
+ legal:[['Mülteci Hakları Merkezi (Refugee Rights Turkey)','legal aid and training on asylum law, based in Istanbul'],['Bar association legal aid offices','free legal aid (adli yardım) through provincial bar associations']],
+ child:[['Hayata Destek (Support to Life)','child protection and psychosocial activities for children'],['UNICEF Türkiye partners','national and local NGOs running child-friendly spaces']],
+ gbv:[['Mor Çatı Kadın Sığınağı Vakfı','women’s shelter foundation, Istanbul'],['KAMER Vakfı','women’s centres in eastern and south-eastern provinces'],['Kadın Dayanışma Vakfı','women’s solidarity foundation, Ankara']],
+ traf:[['Göç İdaresi Başkanlığı','identifies victims and runs the national referral and shelter system'],['YİMER 157','helpline used to report possible trafficking'],['IOM Türkiye','support for victims and assisted voluntary return']],
+ lgbti:[['Kaos GL','LGBTI+ rights association with refugee support work'],['SPoD','social policy, gender identity and sexual orientation studies association']],
+ health:[['SGDD-ASAM','psychosocial and reproductive health counselling'],['Yeryüzü Doktorları (Doctors Worldwide Turkey)','health services for refugees'],['SIHHAT project','EU-funded Ministry of Health programme behind migrant health services']],
+ relief:[['Türk Kızılay','Kızılaykart cash assistance and Restoring Family Links'],['World Food Programme (WFP)','co-founder of the ESSN cash programme']],
+ sar:[['Sahil Güvenlik Komutanlığı','Turkish Coast Guard, responsible for rescue in the Aegean'],['SOS Méditerranée, Sea-Watch','international NGO rescue ships in the central Mediterranean']],
+ edu:[['PIKTES','Ministry of National Education programme for refugee children’s integration in schools'],['ŞEY (CCTE)','Conditional Cash Transfer for Education, paid if children attend school']],
+ liv:[['İŞKUR','Turkish Employment Agency'],['ILO Türkiye Office','decent work and livelihoods programmes for refugees and host communities'],['Hayata Destek (Support to Life)','livelihoods and vocational support']],
+ labour:[['İSİG Meclisi','Health and Safety Labour Watch; publishes data on workplace deaths, including migrant workers'],['Trade union confederations','for example DİSK, Türk-İş and Hak-İş']],
+ comm:[['El Furat','Syrian refugee-led organization in Şanlıurfa that grew from a volunteer team'],['Space for Collaboration','women-led initiative supporting Syrian refugee women'],['Center for Civil Society and Democracy (CCSD)','supports the development of refugee-led organizations']],
+ faith:[['Caritas Türkiye','Catholic charity supporting refugees and migrants'],['Türkiye Diyanet Vakfı','religious foundation providing humanitarian aid']],
+ net:[['3RP Türkiye','Regional Refugee and Resilience Plan, co-led by UNHCR and UNDP'],['Inter-Agency Task Force Türkiye','coordination platform of UN agencies and NGOs'],['ECRE','European Council on Refugees and Exiles, a network of European NGOs']],
+ research:[['Medya ve Göç Derneği (MGD)','Media and Migration Association; research, media monitoring and media literacy'],['Teyit','fact-checking platform'],['Doğruluk Payı','fact-checking platform'],['Göç Araştırmaları Derneği (GAR)','Association for Migration Research']],
+ rights:[['İnsan Hakları Derneği (İHD)','Human Rights Association'],['Amnesty International Türkiye',''],['Mülteci-Der','Association for Solidarity with Refugees, İzmir'],['Mazlumder','human rights and solidarity association']],
+ press:[['MLSA','Media and Law Studies Association; trial monitoring and legal support for journalists'],['Türkiye Gazeteciler Sendikası (TGS)','Journalists’ Union of Türkiye'],['Çağdaş Gazeteciler Derneği (ÇGD)','Progressive Journalists’ Association'],['RSF, CPJ, IPI','international press freedom organizations']]
+};
+const exHTML=id=>(EX[id]||[]).length?`<ul class="ex">${EX[id].map(([n,d])=>`<li><b>${esc(n)}</b>${d?` <span>${esc(d)}</span>`:''}</li>`).join('')}</ul>`:'';
+const S=(id,t,lv,s,title,w,x,n=[])=>({id,t,lv,s,title,w,x,n});
+const CASES=[
+ {id:'documentation',grp:'case',tab:'Deactivated ID',title:'A family’s ID is deactivated',who:'A Syrian family under temporary protection learns at a hospital that their IDs have been deactivated because they were not found at their registered address.',
+  sum:'One of the most frequent cases in Türkiye. Without an active ID, the family loses access to health care, school and cash assistance until the problem is solved at the provincial migration directorate.',
+  stages:['Problem appears','Information','Re-registration','Services restored','If it fails'],steps:[
+  S('c1','pub','l',0,'Refused at the hospital','Hospital staff','The hospital system shows the IDs as inactive, so treatment is not covered.',['c2']),
+  S('c2','prot','l',1,'Status check and advice','Protection counsellor','Checks the ID status on e-Devlet (turkiye.gov.tr) with the family and explains that their address registration has to be updated.',['c4','c8']),
+  S('c3','intl','n',1,'Helpline information','Helpline operator','The UNHCR advice line (444 4 868) explains the same steps in Arabic and lists the documents needed.',['c4']),
+  S('c4','prot','l',2,'Appointment and documents','Case worker','Helps book an “address registry” appointment on randevu.goc.gov.tr and gather a lease contract or utility bill. If the address cannot be found, it is first registered with the municipality.',['c5']),
+  S('c5','pub','l',2,'Address registered, ID reactivated','Migration expert, provincial directorate','The provincial migration directorate registers the new address and reactivates the IDs, sometimes on the same day.',['c6','c7']),
+  S('c6','relief','n',3,'Cash assistance reassessed','Cash assistance officer','With active IDs, the family can be reassessed for Kızılaykart cash assistance.'),
+  S('c7','health','l',3,'Back to health care','Health mediator','Accompanies the family back to the hospital or to a migrant health centre.'),
+  S('c8','legal','l',4,'If the status was cancelled','Lawyer','If the ID was cancelled for another reason, for example a security code, a bar association lawyer can challenge the decision at the administrative court.')]},
+ {id:'return',grp:'case',tab:'Return to Syria',title:'A family considers returning to Syria',who:'After the fall of the Assad government in December 2024, a Syrian family in Gaziantep is deciding whether to go back.',
+  sum:'Returns have been the main policy focus in Türkiye since December 2024. The procedure runs through the provincial migration directorate; NGOs, lawyers and UNHCR help make sure the decision is informed and voluntary.',
+  stages:['Deciding','Counselling','Application','Departure','After return'],steps:[
+  S('e1','comm','l',0,'News from relatives','Community volunteer','Relatives who have already returned share news about housing, schools and safety in their home town through community networks.',['e2']),
+  S('e2','prot','l',1,'Information counselling','Protection counsellor','Explains the procedure, that it is free and voluntary, and what happens to school records, health care and documents in Türkiye.',['e4','e3']),
+  S('e3','legal','l',1,'Legal questions','Lawyer','Advises on issues such as travelling with children when one parent is absent. The provincial directorate can also refer people to the bar association for free legal aid.',['e4']),
+  S('e9','intl','n',1,'SMS and helpline','Helpline operator','UNHCR sends SMS messages explaining each step and answers questions on its advice line.',['e4']),
+  S('e4','pub','l',2,'Appointment and interview','Migration expert, provincial directorate','After booking on randevu.goc.gov.tr, the family attends in person. Biometrics are taken and an interview confirms that the decision is voluntary.',['e5']),
+  S('e5','pub','l',2,'Voluntary Return Form','Migration expert, provincial directorate','Adults sign the form in Turkish and Arabic and receive a travel permit valid for 15 days to the border gate they choose.',['e6']),
+  S('e6','pub','n',3,'Exit at the border gate','Border officials','The signed form and documents are checked at the gate before departure.',['e7','e8']),
+  S('e7','intl','r',4,'Support inside Syria','Programme officer','UN agencies and NGOs in the regional Syria response support returnees with documents, shelter repair and basic services.'),
+  S('e8','research','n',4,'Monitoring returns','Field researcher','Research organizations and UN agencies track how many people return and whether returns last.')]},
+ {id:'inkind',grp:'case',tab:'In-kind aid',title:'In-kind aid for a family in winter',who:'A refugee household in Hatay, with an older relative and a person with a disability, has no heating, blankets or winter clothes.',
+  sum:'Cash through Kızılaykart is the main form of assistance in Türkiye, but in-kind aid is still used for winter needs, emergencies and households that cash does not reach. Most of the work is local; funding, targeting rules and coordination sit at national level.',
+  stages:['Need identified','Assessment','Targeting','Distribution','Monitoring'],steps:[
+  S('i1','comm','l',0,'Neighbours report the family','Community volunteer','A community volunteer tells a local aid organization about a household that cannot heat its home.',['i2']),
+  S('i2','relief','l',1,'Household visit','Field assessment officer','Visits the home, fills in a needs assessment and records vulnerability criteria such as age, disability and household size.',['i4']),
+  S('i3','intl','n',1,'Funding and criteria','Programme officer','A UN agency or international NGO funds the winter kits and sets the targeting criteria and item standards.',['i4']),
+  S('i4','relief','n',2,'Beneficiary list checked','Information management officer','Checks the list against other organizations’ lists to avoid duplication; an active ID is usually required.',['i5','i6']),
+  S('i5','pub','l',3,'Municipal support','Municipal social services staff','The municipality provides a distribution point and can add its own social assistance.',['i6']),
+  S('i6','relief','l',3,'Distribution','Distribution officer','Families collect blankets, heaters, hygiene kits or food parcels with a voucher and their ID; items are delivered at home for people who cannot travel.',['i8']),
+  S('i7','faith','l',3,'Extra local support','Volunteer','A local religious charity adds food parcels and winter clothes for the same household.',['i8']),
+  S('i8','research','l',4,'Post-distribution monitoring','M&E officer','Calls a sample of families to check that the items arrived and met their needs, and records complaints from a hotline.',['i9']),
+  S('i9','net','n',4,'Sector coordination','Sector coordinator','Results are reported to the basic needs sector of the 3RP, so that gaps and overlaps between organizations become visible.')]},
+ {id:'detention',grp:'case',tab:'Registration & detention',title:'A single applicant cannot register and is detained',who:'A single Afghan in their twenties tries to apply for international protection in Istanbul, is not registered, and is later stopped in an identity check.',
+  sum:'Registration is one of the biggest barriers in Türkiye, especially for single men from Afghanistan, Iran and Iraq. Without registration, an identity check can lead to a removal centre, and from there the work is mostly legal.',
+  stages:['Registration','Apprehension','Legal access','Legal remedy','Outcome'],steps:[
+  S('x1','pub','l',0,'Registration refused','Migration expert, provincial directorate','The provincial directorate does not register the application. Many neighbourhoods are also closed to new registrations of foreigners.',['x2']),
+  S('x2','prot','l',0,'Attempt to support registration','Protection counsellor','An NGO tries to support the registration, but for single applicants referrals rarely succeed.',['x3']),
+  S('x3','pub','l',1,'Removal centre','Police and removal centre staff','Stopped without a valid document, they receive a deportation decision and are placed in one of Türkiye’s removal centres.',['x4']),
+  S('x4','comm','l',1,'Friends ask for help','Community volunteer','Friends from the community contact a lawyer they trust.',['x5']),
+  S('x5','legal','l',2,'Lawyer access','Legal-aid lawyer','A bar association lawyer visits the removal centre and takes power of attorney; locating the person and getting access can take time.',['x6','x7','x9']),
+  S('x6','legal','l',3,'Appeal against deportation','Lawyer','Files an appeal at the administrative court within the short legal deadline (7 days under Law No. 6458).',['x8','x10']),
+  S('x7','legal','l',3,'Challenge to detention','Lawyer','Applies to the criminal judgeship of peace against the detention. In practice, release is rare unless the deportation decision is annulled.',['x8']),
+  S('x10','intl','r',3,'Urgent interim measure','Judge, European Court of Human Rights','If there is a risk of torture or ill-treatment on return, the lawyer can ask the Court to stop the removal (Rule 39), usually alongside an application to the Constitutional Court.',['x8']),
+  S('x9','rights','n',3,'Detention monitoring','Detention monitor','Human rights organizations and TİHEK, the national preventive mechanism, report on conditions and lawyer access in removal centres.',['x11']),
+  S('x11','intl','r',4,'European anti-torture committee','Committee member (CPT)','The Council of Europe’s anti-torture committee visits places of detention, including removal centres, and publishes its findings.'),
+  S('x8','pub','l',4,'Court decision','Judge, administrative court','The court cancels or confirms the deportation decision.',['x12']),
+  S('x12','prot','l',4,'If released','Case worker','Helps them try to register again and find safe housing.')]},
+ {id:'shadow',grp:'adv',tab:'Shadow report to the UN',title:'From field cases to a UN review',who:'Several local NGOs keep seeing the same problem: migrant workers lose wages because employers do not apply for work permits.',
+  sum:'Advocacy starts in local casework and climbs. A national coalition turns cases into evidence, a regional network and a UN committee amplify it, and the recommendations come back home.',
+  stages:['Field evidence','Coalition','Evidence & lobbying','International review','Follow-up'],steps:[
+  S('v1','labour','l',0,'A pattern in casework','Labour rights counsellor','The same complaint appears again and again in helpline calls and case files.',['v2']),
+  S('v2','research','l',0,'Anonymised case data','M&E officer','Organizations count how often the problem appears, without names.',['v3']),
+  S('v3','net','n',1,'National coalition forms','Coalition coordinator','Several organizations agree to report together, so that no single NGO carries the political risk alone.',['v4']),
+  S('v4','research','n',2,'Evidence and policy brief','Field researcher','Surveys and interviews turn individual stories into numbers and clear recommendations.',['v5','v6']),
+  S('v5','rights','n',2,'Meetings with decision-makers','Advocacy officer','Presents the brief to the labour ministry, the migration authority and parliamentary committees.',['v9']),
+  S('v6','rights','n',3,'Shadow report','Advocacy officer','Writes an alternative report to the UN committee that reviews how Türkiye applies the 1990 Migrant Workers Convention.',['v7','v8']),
+  S('v7','net','r',3,'Regional network shares it','Network policy officer','A regional NGO network circulates the findings and compares them with other countries in the region.',['v8']),
+  S('v8','intl','g',3,'UN committee review','Committee member (CMW)','The UN Committee on Migrant Workers questions the government in Geneva and publishes recommendations, called concluding observations.',['v9']),
+  S('v9','rights','n',4,'Follow-up at home','Advocacy officer','The coalition uses the UN recommendations in meetings and in the media, and tracks what changes.',['v10']),
+  S('v10','labour','l',4,'Back to the field','Labour rights counsellor','Workers learn about any new rules, and new cases show whether practice has really changed.')]},
+ {id:'rumour',grp:'adv',tab:'Online rumour',title:'A false rumour about refugees spreads online',who:'A video claiming that refugees get free university places goes viral and leads to threats against a neighbourhood.',
+  sum:'Here the “case” is a piece of disinformation. Verification is national work; the response to threats is local.',
+  stages:['Spotting','Verifying','Responding','Community','Prevention'],steps:[
+  S('r1','research','n',0,'Rumour detected','Social media monitor','Notices the video trending and saves copies before posts are deleted.',['r2']),
+  S('r2','research','n',1,'Fact-check','Fact-checker','Checks the claim against official regulations and university data and finds it false.',['r3','r4']),
+  S('r3','research','n',2,'Correction published','Fact-checker','Publishes a short, shareable correction in Turkish and Arabic.',['r6']),
+  S('r4','comm','l',3,'Warning the neighbourhood','Community leader','Shares safety information and the correction in community groups.',['r5']),
+  S('r5','prot','l',3,'Support after threats','Case worker','Supports families who were threatened and refers them to legal help if needed.'),
+  S('r6','research','n',4,'Media literacy work','Field researcher','Uses the case in media literacy trainings for journalists, students and community leaders.')]}
+];
+const GROUPS={case:'Common cases in Türkiye',adv:'Advocacy & information'};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const col=t=>`var(${FAM[T[t].f].c})`;
+let cur=null,sel=null,hlType=null;
+
+// tabs, grouped
+Object.keys(GROUPS).forEach(g=>{
+  const row=document.createElement('div');row.className='tabs';row.setAttribute('role','tablist');row.setAttribute('aria-label',GROUPS[g]);
+  row.innerHTML=`<span class="glabel">${esc(GROUPS[g])}</span>`;
+  CASES.filter(c=>c.grp===g).forEach(c=>{const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.id='tab-'+c.id;b.textContent=c.tab;b.setAttribute('aria-selected','false');b.addEventListener('click',()=>openCase(c.id));row.appendChild(b)});
+  $('tabs').appendChild(row);
+});
+
+function openCase(id,type){
+  cur=CASES.find(c=>c.id===id)||CASES[0];sel=null;hlType=type||null;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.id==='tab-'+cur.id?'true':'false'));
+  $('caseTitle').textContent=cur.title;$('caseWho').textContent=cur.who;$('caseSummary').textContent=cur.sum;
+  if(!document.getElementById('view-flow').hidden){try{history.replaceState(null,'','#'+cur.id)}catch(e){}}
+  renderFlow();renderDetail();
+}
+function renderFlow(){
+  const c=cur,flow=$('flow');
+  flow.style.gridTemplateColumns=`220px repeat(${c.stages.length}, minmax(180px,1fr))`;
+  flow.style.minWidth=(220+c.stages.length*190+16)+'px';
+  let h=`<svg class="arrows" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--line)"/></marker><marker id="ah-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker></defs><g id="arrowg"></g></svg>`;
+  h+=`<div class="colhead"></div>`;
+  c.stages.forEach((s,i)=>h+=`<div class="colhead"><span class="n">${i+1}</span>${esc(s)}</div>`);
+  const num={};c.steps.forEach((s,i)=>num[s.id]=i+1);
+  LEVELS.forEach(L=>{
+    const lanes=ORDER.filter(t=>c.steps.some(s=>s.t===t&&s.lv===L.id));
+    h+=`<div class="bandrow${lanes.length?'':' empty'}"><b>${L.name}</b><span>${lanes.length?esc(L.desc):'No steps at this level in this case'}</span></div>`;
+    lanes.forEach(l=>{
+      const t=T[l],hl=hlType===l?' lane-hl':'';
+      h+=`<div class="lanehead${hl}" style="--c:${col(l)}"><span>${esc(FAM[t.f].name)}</span><b>${esc(t.name)}</b></div>`;
+      c.stages.forEach((_,si)=>{
+        const st=c.steps.filter(s=>s.t===l&&s.lv===L.id&&s.s===si);
+        h+=`<div class="cell${hl}">${st.map(s=>`<button class="step" data-id="${s.id}" style="--c:${col(s.t)}" aria-label="Step ${num[s.id]}: ${esc(s.title)}, ${esc(s.w)}, ${L.name} level"><span class="top"><span class="num">${num[s.id]}</span><span class="t">${esc(s.title)}</span></span><span class="w">${esc(s.w)}</span></button>`).join('')}</div>`;
+      });
+    });
+  });
+  flow.innerHTML=h;
+  flow.querySelectorAll('.step').forEach(b=>b.addEventListener('click',()=>{sel=sel===b.dataset.id?null:b.dataset.id;renderDetail();markSel();drawArrows()}));
+  const fams=[...new Set(c.steps.map(s=>T[s.t].f))];
+  $('legend').innerHTML=fams.map(f=>`<span style="--c:var(${FAM[f].c})"><i class="dot"></i>${esc(FAM[f].name)}</span>`).join('')+`<span>· ${c.steps.length} steps</span>`;
+  markSel();requestAnimationFrame(drawArrows);
+}
+function markSel(){
+  const flow=$('flow'),s=sel&&cur.steps.find(x=>x.id===sel);
+  const nb=new Set();if(s){s.n.forEach(i=>nb.add(i));cur.steps.forEach(x=>{if(x.n.includes(s.id))nb.add(x.id)})}
+  flow.classList.toggle('dim',!!s);
+  flow.querySelectorAll('.step').forEach(b=>{b.classList.toggle('sel',b.dataset.id===sel);b.classList.toggle('nb',nb.has(b.dataset.id))});
+}
+function drawArrows(){
+  const flow=$('flow'),g=flow.querySelector('#arrowg');if(!g||!cur)return;
+  const fr=flow.getBoundingClientRect();let out='',on='';
+  const box=id=>{const el=flow.querySelector(`.step[data-id="${id}"]`);if(!el)return null;const r=el.getBoundingClientRect();return {l:r.left-fr.left,r:r.right-fr.left,t:r.top-fr.top,b:r.bottom-fr.top,cx:(r.left+r.right)/2-fr.left,cy:(r.top+r.bottom)/2-fr.top}};
+  const sx=cur.steps.reduce((m,s)=>(m[s.id]=s,m),{});
+  cur.steps.forEach(s=>s.n.forEach(nid=>{
+    const a=box(s.id),b=box(nid);if(!a||!b)return;let d;
+    if(sx[nid].s>s.s){const x1=a.r,y1=a.cy,x2=b.l-2,y2=b.cy,dx=Math.max(24,(x2-x1)/2);d=`M${x1} ${y1} C${x1+dx} ${y1} ${x2-dx} ${y2} ${x2} ${y2}`}
+    else if(b.t>a.b-4){const x1=a.cx,y1=a.b,x2=b.cx,y2=b.t-2,dy=Math.max(16,(y2-y1)/2);d=`M${x1} ${y1} C${x1} ${y1+dy} ${x2} ${y2-dy} ${x2} ${y2}`}
+    else{const x1=a.cx,y1=a.t,x2=b.cx,y2=b.b+2,dy=Math.max(16,(y1-y2)/2);d=`M${x1} ${y1} C${x1} ${y1-dy} ${x2} ${y2+dy} ${x2} ${y2}`}
+    const act=sel&&(s.id===sel||nid===sel);
+    const p=`<path class="arrow${act?' on':''}" d="${d}" marker-end="url(#${act?'ah-on':'ah'})"/>`;
+    act?on+=p:out+=p;
+  }));
+  g.innerHTML=out+on;
+}
+function renderDetail(){
+  const d=$('detail');
+  if(!sel){d.style.removeProperty('--c');
+    d.innerHTML=`<span class="kicker">Step details</span><h3>Select a step</h3><p>Numbers show the order of the work and arrows show handovers between organizations and levels. Each step lists the field worker, what they do and examples of organizations in Türkiye.</p>`;return}
+  const s=cur.steps.find(x=>x.id===sel),t=T[s.t],num=cur.steps.indexOf(s)+1;
+  const prev=cur.steps.filter(x=>x.n.includes(s.id)),next=s.n.map(i=>cur.steps.find(x=>x.id===i));
+  const btn=x=>`<button class="chip" data-go="${x.id}" style="--c:${col(x.t)}"><span class="dot"></span>${cur.steps.indexOf(x)+1}. ${esc(x.title)} · ${LV[x.lv].name}</button>`;
+  d.style.setProperty('--c',col(s.t));
+  d.innerHTML=`<span class="kicker">Step ${num} · ${esc(cur.stages[s.s])} · ${LV[s.lv].name} level · ${esc(t.name)}</span><h3>${esc(s.title)}</h3><p><b>Field worker:</b> ${esc(s.w)}</p><p>${esc(s.x)}</p>`+
+   ((EX[s.t]||[]).length?`<span class="kicker">Examples in Türkiye · ${esc(t.name)}</span>${exHTML(s.t)}`:'')+
+   (prev.length?`<span class="kicker">Receives the case from</span><div class="chips">${prev.map(btn).join('')}</div>`:'')+
+   (next.length?`<span class="kicker">Hands over to</span><div class="chips">${next.map(btn).join('')}</div>`:`<span class="kicker">End of this path</span>`)+mapChips(s);
+  d.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{sel=b.dataset.go;renderDetail();markSel();drawArrows()}));
+  d.querySelectorAll('[data-map]').forEach(b=>b.addEventListener('click',()=>{if(window.__shell)window.__shell.show('map',true);if(window.__gov)window.__gov.selectNode(b.dataset.map);const m=document.getElementById('mapmain');if(m)m.scrollIntoView({behavior:'auto',block:'start'})}));
+}
+function govNodes(s){
+  const x=s.title+' '+s.w+' '+s.x,out=new Set();
+  if(/UNHCR/.test(x))out.add('unhcr');
+  if(/\bIOM\b/.test(x))out.add('iom');
+  if(/European Court|anti-torture|Council of Europe/.test(x))out.add('ecthr');
+  if(/Committee on Migrant Workers|CMW/.test(x))out.add('ohchr');
+  if(/3RP|regional Syria response/.test(x))out.add('rrp');
+  if(/Kızılay/.test(x))out.add('kizilay');
+  if(/Law No\. 6458/.test(x))out.add('law6458');
+  if(s.t==='pub'){if(/migration directorate|provincial directorate|Migration expert|removal centre/i.test(x))out.add('pmm');else if(/municipal/i.test(x))out.add('muni');else out.add('turkiye')}
+  else if(s.t==='comm')out.add('networks');
+  else if(s.t==='relief'){if(!out.has('kizilay'))out.add('ngos')}
+  else if(s.t!=='intl')out.add('ngos');
+  return [...out];
+}
+function mapChips(s){
+  const G=window.__gov;if(!G)return '';
+  const ids=govNodes(s).filter(id=>G.has(id));if(!ids.length)return '';
+  return `<span class="kicker">On the governance map</span><div class="chips">${ids.map(id=>`<button class="chip" data-map="${id}">${esc(G.name(id))}</button>`).join('')}</div>`;
+}
+function renderDir(){
+  const by={};TYPES.forEach(t=>(by[t.f]=by[t.f]||[]).push(t));
+  $('dir').innerHTML=Object.keys(FAM).filter(f=>by[f]).map(f=>`<div class="fam" style="--c:var(${FAM[f].c})"><h3>${esc(FAM[f].name)}</h3><div class="cards">${by[f].map(t=>{
+    const cs=CASES.filter(c=>c.steps.some(s=>s.t===t.id));
+    const lv=LEVELS.filter(L=>CASES.some(c=>c.steps.some(s=>s.t===t.id&&s.lv===L.id))).map(L=>L.name);
+    return `<article class="card" style="--c:var(${FAM[f].c})"><h4>${esc(t.name)}</h4><p>${esc(t.does)}</p><span class="lab">Field workers</span><div class="workers">${t.w.map(w=>`<span>${esc(w)}</span>`).join('')}</div><span class="lab">Examples in Türkiye</span>${exHTML(t.id)}<span class="lab">Levels in these cases</span><span class="lvls">${lv.length?lv.join(' · '):'—'}</span><span class="lab">Appears in</span><div class="chips">${cs.length?cs.map(c=>`<button class="chip" data-case="${c.id}" data-type="${t.id}">${esc(c.tab)}</button>`).join(''):'<span class="chip">Not in these examples</span>'}</div></article>`}).join('')}</div></div>`).join('');
+  $('dir').querySelectorAll('[data-case]').forEach(b=>b.addEventListener('click',()=>{openCase(b.dataset.case,b.dataset.type);$('tabs').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}));
+}
+renderDir();
+window.__flow={openCase:id=>openCase(id),cases:CASES.map(c=>({id:c.id,tab:c.tab}))};
+const startId=(location.hash||'').slice(1);
+openCase(CASES.some(c=>c.id===startId)?startId:'arrival');
+if('ResizeObserver' in window)new ResizeObserver(()=>drawArrows()).observe($('flow'));
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawArrows);
+})();
+</script>
+
+</body>
+</html>
